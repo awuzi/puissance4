@@ -4,6 +4,7 @@ import Button from "../components/Button";
 import Label from "../components/Label";
 import Title from '../components/Title';
 import Logo from "../components/Logo";
+import Link from "../components/Link";
 
 const Home = () => {
 
@@ -41,7 +42,9 @@ const Home = () => {
                                     />
                                 </div>
                                 <div className="mb-6 text-center">
-                                    <Button type="submit">Jouer</Button>
+                                    <Link route="/game">
+                                        <Button type="submit">Jouer</Button>
+                                    </Link>
                                 </div>
                                 <Alert type="error" message={error}/>
                                 <Alert type="success" message={success}/>
