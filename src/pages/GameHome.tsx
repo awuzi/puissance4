@@ -1,11 +1,11 @@
 import React from 'react';
 
-const Routers = () => {
+const GameHome = () => {
     return (
         <>
-            Hello World
+            <p>Hello World</p>
         </>
     );
 }
 
-export default Routers;
+export default GameHome;
