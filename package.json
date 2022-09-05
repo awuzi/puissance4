@@ -8,7 +8,7 @@
         "start:server": "nodemon",
         "start:client": "vite",
         "start": "node build/index.js",
-        "build": "esbuild src/server/index.ts --platform=node --outdir=build --resolve-extensions=.js",
+        "build": "esbuild 'src/server/index.ts' --platform=node --outdir=build --resolve-extensions=.js",
         "test": "vitest",
         "test:watch": "vitest watch"
     },

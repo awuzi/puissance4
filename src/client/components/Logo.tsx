@@ -7,7 +7,7 @@ interface LogoProps {
 
 const Logo = ({className, style}: LogoProps) => {
     return (
-        <img src="/logo.png" className={className} alt="Logo Puissance 4" style={style}/>
+        <img src="/assets/logo.png" className={className} alt="Logo Puissance 4" style={style}/>
     )
 };
 

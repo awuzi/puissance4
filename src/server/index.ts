@@ -3,21 +3,19 @@ import fastifyIO from "fastify-socket.io";
 import FastifyStatic from "@fastify/static";
 import { resolve } from "path";
 
+
 const fastify = Fastify({ logger: false });
 fastify.register(FastifyStatic, { root: resolve("./public") });
 fastify.register(fastifyIO);
 
 
 fastify.get("/", (req, reply) => {
-  fastify.io.emit("hello", { name: 'yahia' });
+  // fastify.io.emit("hello", { name: 'test' });
 });
 
 fastify.ready().then(() => {
-  fastify.io.on("connection", (socket) => {
-    console.log('socket : ', socket);
-    socket.on('hello', (...args) => {
-      console.log('args : ', args);
-    })
+  fastify.io.on("connection", socket => {
+    console.info('Socket connected!', socket.id);
   });
 });
 
@@ -27,6 +25,5 @@ fastify.ready().then(() => {
     console.log('🔥 Server is UP on port 8000');
   } catch (err) {
     fastify.log.error(err);
-    // process.exit(1);
   }
 })();
