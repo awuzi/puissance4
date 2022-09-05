@@ -1,7 +1,7 @@
 import React from "react";
 
 interface LabelProps {
-    htmlFor: string | undefined;
+    htmlFor?: string;
     children: string;
 }
 

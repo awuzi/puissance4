@@ -1,12 +1,13 @@
 import React from "react";
 
 interface LogoProps {
-    props?: any;
+    className?: string;
+    style?: React.CSSProperties | undefined;
 }
 
-const Logo = ({props}: LogoProps) => {
+const Logo = ({className, style}: LogoProps) => {
     return (
-        <img src="/logo.png" alt="Logo Puissance 4" {...props}/>
+        <img src="/logo.png" className={className} alt="Logo Puissance 4" style={style}/>
     )
 };
 

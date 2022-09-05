@@ -8,14 +8,15 @@ import Logo from "../components/Logo";
 const Home = () => {
 
     const [pseudo, setPseudo] = useState<string>();
+    const [adversaire, setAdversaire] = useState<string>("Diyar");
+
     const [error, setError] = useState<string|boolean>(false)
     const [success, setSuccess] = useState<string|boolean>(false)
-    const [adversaire, setAdversaire] = useState<string>("Diyar");
 
     return (
         <>
             <div className="w-full flex flex-col justify-center">
-                <div style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+                <div className="mx-auto">
                     <Logo />
                 </div>
                 <div className="container mx-auto">

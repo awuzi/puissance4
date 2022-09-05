@@ -1,5 +1,5 @@
 interface AlertProps {
-    type: string;
+    type: "error" | "success";
     message: string|boolean;
 }
 
