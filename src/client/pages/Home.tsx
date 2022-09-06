@@ -1,41 +1,66 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import ReconnectingWebSocket from "reconnecting-websocket";
 import { io, Socket } from "socket.io-client";
+import { v4 as uuid } from "uuid";
 import Alert from "../components/Alert";
 import Button from "../components/Button";
 import Label from "../components/Label";
 import Title from '../components/Title';
 import Logo from "../components/Logo";
 import Link from "../components/Link";
+import Game from "./Game";
+
+const socket = io('ws://localhost:8000/');
 
 const Home = () => {
-  const [socket, setSocket] = useState<Socket>();
+  const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
+  const [playerName, setPlayerName] = useState<string>();
+  const [state, setState] = useState({
+    playerId: "",
+    context: {},
+    connected: socket.connected,
+  });
 
-  const [status, setStatus] = useState<boolean>(false);
-  const [pseudo, setPseudo] = useState<string>('');
-  const [adversaire, setAdversaire] = useState<string>("Diyar");
+  socket.on('connect', () => {
+    setIsConnected(true);
+  });
 
-  const onMessage = (args: any) => {
-    localStorage.setItem('gameId', args.id);
-    localStorage.setItem('playerName', args.name);
-    console.log('le jeu mis à jour', args);
+  socket.on('disconnect', () => {
+    setIsConnected(false);
+  });
+
+  const handleEvent = (data: any) => {
+    if (!localStorage.getItem('gameId') && !localStorage.getItem('playerName')) {
+      localStorage.setItem('gameId', data.gameId);
+      localStorage.setItem('playerName', data.name);
+    }
+    console.log('le jeu mis à jour', data);
   }
 
+
   useEffect(() => {
-    const socket = io();
-    setSocket(socket);
+    socket.on('message', handleEvent);
 
-    socket.on('connect', () => console.log('SocketIO is running ', socket.id))
+    const gameId = new URLSearchParams(window.location.search).get('gameId');
 
-    socket.on('message', onMessage);
-
+    if (gameId && socket) {
+      console.log('on m\'a partagé un lien : ', gameId);
+    }
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('pong');
+    };
   }, []);
 
 
   const createGame = () => {
-    socket?.emit('message', { type: 'startGame', name: pseudo });
+    socket.emit('message', {
+      event: 'createGame',
+      gameId: uuid(),
+      id: socket.id
+    });
   }
-
   return (
     <>
       {/*<div className="w-full flex flex-col justify-center">
@@ -75,16 +100,15 @@ const Home = () => {
                     </div>
                 </div>
             </div>*/}
-
-      <div>
-        <input
-          type="text"
-          value={pseudo}
-          onChange={(e) => setPseudo(e.target.value)}
-        />
-        <button onClick={() => createGame()}>Create Game</button>
-        <p>votre pseudo : {pseudo}</p>
-      </div>
+        <div>
+          <input
+            type="text"
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+          />
+          <p>votre playerName : {playerName}</p>
+          <button type='submit' onClick={() => createGame()}>Create Game</button>
+        </div>
     </>
   );
 }
