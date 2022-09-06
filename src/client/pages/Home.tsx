@@ -1,4 +1,6 @@
-import React, {useState} from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
+import ReconnectingWebSocket from "reconnecting-websocket";
+import { io, Socket } from "socket.io-client";
 import Alert from "../components/Alert";
 import Button from "../components/Button";
 import Label from "../components/Label";
@@ -7,16 +9,36 @@ import Logo from "../components/Logo";
 import Link from "../components/Link";
 
 const Home = () => {
+  const [socket, setSocket] = useState<Socket>();
 
-    const [pseudo, setPseudo] = useState<string>();
-    const [adversaire, setAdversaire] = useState<string>("Diyar");
+  const [status, setStatus] = useState<boolean>(false);
+  const [pseudo, setPseudo] = useState<string>('');
+  const [adversaire, setAdversaire] = useState<string>("Diyar");
 
-    const [error, setError] = useState<string|boolean>(false)
-    const [success, setSuccess] = useState<string|boolean>(false)
+  const onMessage = (args: any) => {
+    localStorage.setItem('gameId', args.id);
+    localStorage.setItem('playerName', args.name);
+    console.log('le jeu mis à jour', args);
+  }
 
-    return (
-        <>
-            <div className="w-full flex flex-col justify-center">
+  useEffect(() => {
+    const socket = io();
+    setSocket(socket);
+
+    socket.on('connect', () => console.log('SocketIO is running ', socket.id))
+
+    socket.on('message', onMessage);
+
+  }, []);
+
+
+  const createGame = () => {
+    socket?.emit('message', { type: 'startGame', name: pseudo });
+  }
+
+  return (
+    <>
+      {/*<div className="w-full flex flex-col justify-center">
                 <div className="mx-auto">
                     <Logo />
                 </div>
@@ -52,9 +74,19 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-        </>
-    );
+            </div>*/}
+
+      <div>
+        <input
+          type="text"
+          value={pseudo}
+          onChange={(e) => setPseudo(e.target.value)}
+        />
+        <button onClick={() => createGame()}>Create Game</button>
+        <p>votre pseudo : {pseudo}</p>
+      </div>
+    </>
+  );
 }
 
 export default Home;
