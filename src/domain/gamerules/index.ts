@@ -14,3 +14,12 @@ export function dropToken(
 
   return [] as GridState;
 }
+
+export function playTurn(PlayerColor: PlayerColor, columnNumber: number, grid: GridState): GridState {
+
+  grid[grid.length-1][columnNumber] = PlayerColor;
+
+  console.log(grid);
+
+  return grid
+}
