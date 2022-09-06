@@ -4,6 +4,9 @@ export type CellState = PlayerColor.RED | PlayerColor.YELLOW | EmptyCell;
 
 export type GridState = CellState[][];
 
+export type PlayerId = 'string';
+export type GameId = 'string';
+
 export enum PlayerColor {
   RED = 'R',
   YELLOW = 'Y'

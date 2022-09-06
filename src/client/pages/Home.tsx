@@ -1,22 +1,74 @@
-import React, {useState} from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
+import ReconnectingWebSocket from "reconnecting-websocket";
+import { io, Socket } from "socket.io-client";
+import { v4 as uuid } from "uuid";
 import Alert from "../components/Alert";
 import Button from "../components/Button";
 import Label from "../components/Label";
 import Title from '../components/Title';
 import Logo from "../components/Logo";
 import Link from "../components/Link";
+import Game from "./Game";
+
+const socket = io('ws://localhost:8000/');
 
 const Home = () => {
+  const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
+  const [playerName, setPlayerName] = useState<string>();
+  const [state, setState] = useState({
+    playerId: "",
+    context: {},
+    connected: socket.connected,
+  });
 
-    const [pseudo, setPseudo] = useState<string>();
-    const [adversaire, setAdversaire] = useState<string>("Diyar");
+  socket.on('connect', () => {
+    setIsConnected(true);
+  });
 
-    const [error, setError] = useState<string|boolean>(false)
-    const [success, setSuccess] = useState<string|boolean>(false)
+  socket.on('disconnect', () => {
+    setIsConnected(false);
+  });
 
-    return (
-        <>
-            <div className="w-full flex flex-col justify-center">
+  const handleEvent = (data: any) => {
+    if (!localStorage.getItem('gameId') && !localStorage.getItem('playerName')) {
+      localStorage.setItem('gameId', data.gameId);
+      localStorage.setItem('playerName', data.name);
+    }
+    console.log('le jeu mis à jour', data);
+  }
+
+
+  useEffect(() => {
+    socket.on('message', handleEvent);
+
+    const gameId = new URLSearchParams(window.location.search).get('gameId');
+
+    if (gameId && socket) {
+      console.log('on m\'a partagé un lien : ', gameId);
+    }
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('pong');
+    };
+  }, []);
+
+
+  const createGame = () => {
+    socket.emit('message', {
+      event: 'createGame',
+      gameId: uuid(),
+      id: socket.id
+    });
+  }
+
+  const sendPing = () => {
+    socket.emit('ping');
+  }
+
+  return (
+    <>
+      {/*<div className="w-full flex flex-col justify-center">
                 <div className="mx-auto">
                     <Logo />
                 </div>
@@ -52,9 +104,18 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-        </>
-    );
+            </div>*/}
+        <div>
+          <input
+            type="text"
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+          />
+          <p>votre playerName : {playerName}</p>
+          <button type='submit' onClick={() => createGame()}>Create Game</button>
+        </div>
+    </>
+  );
 }
 
 export default Home;
