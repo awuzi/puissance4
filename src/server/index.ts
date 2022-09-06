@@ -10,13 +10,14 @@ fastify.register(FastifyStatic, { root: resolve("./public") });
 fastify.register(fastifyIO);
 
 fastify.ready().then(() => {
-  fastify.io.on("connection", (socket) => {
+  const io = fastify.io;
+
+  io.on("connection", (socket) => {
     console.log('socket.id : ', socket.id);
 
     socket.on('message', (data) => {
-      if (data.id === socket.id) {
-        socket.emit('message', { id: socket.id, ...data });
-      }
+      console.log('data.event : ', data.event);
+      io.emit('message', { id: socket.id, ...data });
     });
   });
 });
