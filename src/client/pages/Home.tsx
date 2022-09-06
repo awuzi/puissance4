@@ -67,7 +67,7 @@ const Home = () => {
                               />
                           </div>
                           <div className="mb-6 text-center">
-                              <Button onClick={() => createGame()}>Jouer</Button>
+                              <Button onClick={() => createGame()}>Créer</Button>
                           </div>
                           <Alert type="error" message={error}/>
                           <Alert type="success" message={success}/>
