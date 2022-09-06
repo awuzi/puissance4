@@ -1,6 +1,6 @@
 interface AlertProps {
     type: "error" | "success";
-    message: string|boolean;
+    message?: string;
 }
 
 export default function Alert({type, message}: AlertProps) {
@@ -9,7 +9,7 @@ export default function Alert({type, message}: AlertProps) {
 
     return (
         <>
-            {typeof message != "boolean" ?
+            {typeof message != "undefined" ?
                 <>
                     <div className={`flex w-full h-auto bg-${color}-100 rounded-lg p-4 mb-4 text-sm text-${color}-700`} role="alert">
                         <svg className="w-5 h-5 inline mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
