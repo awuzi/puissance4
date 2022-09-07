@@ -7,41 +7,48 @@ interface Puissance4Props {
 const Puissance4 = ({gameData}: Puissance4Props) => {
 
     const canvasRef = useRef(null)
-    const [click, setClick] = useState(0);
+    const grilleCoords = [100, 190, 280, 370, 460, 550, 640];
 
-    function drawJeton(player = 1, ligne = 4, colonne = 0) {
+    function clickGrille(click: React.MouseEvent) {
+        const canvas = canvasRef.current
+        // @ts-ignore
+        let rect = canvas.getBoundingClientRect();
+        let x = click.clientX - rect.left;
+        let y = click.clientY - rect.top;
+
+        for (const [index, coord] of grilleCoords.entries()) {
+            if (x < coord) {
+                drawJeton(1, 5, index);
+                break;
+            }
+        }
+    }
+
+    function drawJeton(player = 1, ligne = 2, colonne = 0) {
         const canvas = canvasRef.current
         // @ts-ignore
         const ctx = canvas.getContext('2d')
         ctx.fillStyle = (player === 1) ? "#c82124" : "#1e90ff";
         const x = colonne == 0 ? 50 : (colonne * 90) + 50;
         const y = ligne == 0 ? 41 : (ligne * 80) + 41;
-
-        for (let i = 0; i < y; i++) {
-            setTimeout(function() {
-                animate(ctx, x, i);
-            }, 1000 / 30);
-        }
+        let i = 0;
+        const anim = setInterval(function() {
+            i++;
+            animate(ctx, x, i);
+            if (i >= y) clearInterval(anim);
+        }, 1);
     }
 
     function animate(ctx: any, x: number, i: number) {
-        let bg = new Image();
-        bg.src = "/assets/grille.png";
-        ctx.clearRect(0, 0, 640, 480);
-        ctx.drawImage(bg, 0, 0, 640, 480);
         ctx.beginPath();
+        ctx.clearRect(x-35, i-37, 70, 35);
         ctx.arc(x, i, 35, 0, 2 * Math.PI)
-        ctx.fill()
-        console.log("i work");
+        ctx.fill();
     }
-
-    useEffect(() => {
-        drawJeton()
-    }, [click]);
 
     return (
         <>
-            <canvas ref={canvasRef} width="640" height="480" className="bg-amber-50" style={{ height: '480px', width: '640px', backgroundImage: "url('./assets/grille.png')" }}></canvas>
+            <canvas ref={canvasRef} onClick={(e) => clickGrille(e)} width="640" height="480" className="bg-amber-50" style={{ height: '480px', width: '640px', backgroundImage: "url('./assets/grille.png')" }}></canvas>
         </>
     )
 }
