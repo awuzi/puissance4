@@ -1,18 +1,8 @@
-import { platform } from "os";
-import React, { ChangeEvent, FormEventHandler, useEffect, useReducer, useState } from 'react';
-import { NavLink } from "react-router-dom";
-import ReconnectingWebSocket from "reconnecting-websocket";
-import { io, Socket } from "socket.io-client";
-import { v4 as uuid } from "uuid";
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { io } from "socket.io-client";
 import { makeEmptyGrid } from "../../domain/grid";
-import { replaceQueryParams } from "../../shared/helpers/url";
-import Alert from "../components/Alert";
-import Button from "../components/Button";
-import Label from "../components/Label";
-import { PlayerForm } from "../components/PlayerForm";
-import Title from '../components/Title';
-import Logo from "../components/Logo";
-import Link from "../components/Link";
+import { GridState, PlayerColor } from "../../domain/types";
+import Puissance4 from "../components/Puissance4";
 
 const socket = io('ws://localhost:8000/');
 
@@ -22,7 +12,8 @@ const Home = () => {
   const [state, setState] = useState<any>({
     gameId: '',
     players: [],
-    grid: []
+    // currentPlayer: '',
+    grid: makeEmptyGrid(6)(7)
   });
   const [players, setPlayers] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -85,7 +76,15 @@ const Home = () => {
 
   const dropToken = () => {
     const token = `droped by ${socket.id}`;
+    // const currentState = {
+    //   ...state,
+      // currentPlayer: state.players.find((s: string) => s !== socket.id)
+    // }
     socket.emit('dropToken', [...state.grid, `droped by ${socket.id}`]);
+  }
+
+  const updateGrid = (grid: GridState) => {
+    setState({ ...state, grid });
   }
 
   return (
@@ -146,7 +145,10 @@ const Home = () => {
 
       <button onClick={dropToken}>poser un jeton</button>
       <hr/>
+      <Puissance4 gameData={state.grid} setGrid={updateGrid} playerColor={PlayerColor.RED}/>
+
       <pre>{JSON.stringify(state, null, 2)}</pre>
+
       {/*</div>*/}
     </>
   );
