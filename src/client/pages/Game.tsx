@@ -1,27 +1,21 @@
-import React, { useState } from 'react';
-import { useParams } from "react-router-dom";
+import React, {useState} from 'react';
+import {useParams} from "react-router-dom";
 import Logo from "../components/Logo";
 import Puissance4 from "../components/Puissance4";
+import {GridState, PlayerColor} from "../../domain/types";
 
 const Game = () => {
 
   const { gameId } = useParams();
-  const [playing, setPlaying] = useState(true)
-  const [gameData, setGameData] = useState([
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0],
-  ])
-
-
-  const onDropToken = () => {
-    // todo :
-    //  mettre à jour la grille
-    //  envoyer l'état de la grille au joueur 2
-  }
+  const [playing, setPlaying] = useState(true);
+  const [gameData, setGameData] = useState<GridState>([
+    ['_', '_', '_', '_', '_', '_', '_'],
+    ['_', '_', '_', '_', '_', '_', '_'],
+    ['_', '_', '_', '_', '_', '_', '_'],
+    ['_', '_', '_', '_', '_', '_', '_'],
+    ['_', '_', '_', '_', '_', '_', '_'],
+    ['_', '_', '_', PlayerColor.RED, PlayerColor.YELLOW, '_', '_'],
+  ]);
 
   return (
     <>
