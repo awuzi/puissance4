@@ -13,10 +13,11 @@ export enum PlayerColor {
 }
 
 export enum GameAction {
-  JOIN_GAME = 'JOIN_GAME',
-  LEAVE_GAME = 'LEAVE_GAME',
-  WIN_GAME = 'WIN_GAME',
-  LOOSE_GAME = 'LOOSE_GAME',
+  JOIN = 'JOIN',
+  LEAVE = 'LEAVE',
+  WIN = 'WIN',
+  DRAW = 'DRAW',
+  LOOSE = 'LOOSE',
 }
 
 export enum PlayerAction {

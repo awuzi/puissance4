@@ -1,28 +1,24 @@
-import { platform } from "os";
-import React, { ChangeEvent, FormEventHandler, useEffect, useReducer, useState } from 'react';
-import { NavLink } from "react-router-dom";
-import ReconnectingWebSocket from "reconnecting-websocket";
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { io, Socket } from "socket.io-client";
-import { v4 as uuid } from "uuid";
 import { makeEmptyGrid } from "../../domain/grid";
-import { replaceQueryParams } from "../../shared/helpers/url";
-import Alert from "../components/Alert";
-import Button from "../components/Button";
-import Label from "../components/Label";
-import { PlayerForm } from "../components/PlayerForm";
-import Title from '../components/Title';
-import Logo from "../components/Logo";
-import Link from "../components/Link";
+import { GridState, PlayerColor } from "../../domain/types";
+import Puissance4 from "../components/Puissance4";
 
 const socket = io('ws://localhost:8000/');
 
 const Home = () => {
   const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
   const [gameId, setGameId] = useState<string>();
-  const [state, setState] = useState<any>({
+  const [state, setState] = useState<{
+    gameId: string,
+    players: { id: string, playerColor: PlayerColor }[],
+    currentPlayer: { id: string, playerColor: PlayerColor },
+    grid: GridState
+  }>({
     gameId: '',
     players: [],
-    grid: []
+    currentPlayer: {} as { id: string, playerColor: PlayerColor },
+    grid: makeEmptyGrid(6)(7)
   });
   const [players, setPlayers] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,17 +36,15 @@ const Home = () => {
 
     socket.on('message', (data: any) => {
       setState(data);
-      console.log('le jeu mis à jour', data);
     });
 
     socket.on('joined', (data) => {
       console.log('joined event : ', data);
       setState(data);
-      // socket.emit('message', data);
     });
 
     socket.on('tokenDropped', (data) => {
-      // state.grid = grid;
+      console.log('joined event : ', data);
       setState(data);
     })
 
@@ -65,10 +59,12 @@ const Home = () => {
   const createGame = () => {
     const gameId = 'game';
     setGameId(gameId);
+    const currentPlayer = { id: socket.id, playerColor: PlayerColor.RED };
     const currentState = {
       ...state,
       gameId: 'game',
-      players: [...state.players, socket.id]
+      currentPlayer,
+      players: [currentPlayer]
     };
     setState(currentState);
     socket.emit('createGame', currentState);
@@ -78,14 +74,28 @@ const Home = () => {
     const currentState = {
       ...state,
       gameId: 'game',
-      playerId: socket.id
+      playerId: socket.id,
+      playerColor: PlayerColor.YELLOW
     };
     socket.emit('join', currentState);
   }
 
   const dropToken = () => {
-    const token = `droped by ${socket.id}`;
-    socket.emit('dropToken', [...state.grid, `droped by ${socket.id}`]);
+    // const token = `droped by ${socket.id}`;
+    // const currentState = {
+    //   ...state,
+    // }
+    // socket.emit('dropToken', [...state.grid, `droped by ${socket.id}`]);
+  }
+
+  const updateGrid = (grid: GridState) => {
+    const currentState = {
+      ...state,
+      currentPlayer: state.players.find(s => s.id !== socket.id)!,
+      grid
+    };
+    setState(currentState);
+    socket.emit('message', currentState);
   }
 
   return (
@@ -126,12 +136,14 @@ const Home = () => {
           </div>
         </div>
       </div>*/}
-      <div className="flex flex-col justify-center">
-        <button type="submit" onClick={createGame} className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg p-2">
+      <div className="container mx-auto flex flex-col justify-center">
+        <button onClick={createGame} className="w-1/4 text-white bg-blue-700 hover:bg-blue-800 rounded-lg p-2">
           Créer partie
         </button>
 
-        gameId = {gameId}
+        <p>
+          gameId = {gameId}
+        </p>
 
         <div>
           <input
@@ -140,13 +152,21 @@ const Home = () => {
             value={joinCode}
             onChange={handleChangeCode}
           />
-          <button onClick={joinGame}>Rejoindre partie</button>
+          <button onClick={joinGame} className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg p-2">
+            Rejoindre partie
+          </button>
         </div>
       </div>
 
-      <button onClick={dropToken}>poser un jeton</button>
+      {/*<button onClick={dropToken}>poser un jeton</button>*/}
       <hr/>
+      <Puissance4
+        gameData={state.grid}
+        updateGrid={updateGrid}
+        playerColor={state.currentPlayer?.playerColor}
+      />
       <pre>{JSON.stringify(state, null, 2)}</pre>
+
       {/*</div>*/}
     </>
   );

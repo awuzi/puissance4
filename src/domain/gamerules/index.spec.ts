@@ -1,5 +1,5 @@
 import { expect, describe, it } from "vitest";
-import { calculateRowNumber, playTurn } from './index';
+import { findFreePositionY, playTurn } from './index';
 import { makeEmptyGrid } from '../grid/index';
 import { GridState, PlayerColor } from "../types";
 
@@ -11,11 +11,11 @@ describe('#playTurn', function () {
       const columnNumber = 2
       const columns = 7
       const rows = 6
-      
+
       // when
       let grid = makeEmptyGrid(rows)(columns)
       grid = playTurn(PlayerColor.RED, columnNumber, grid)
-    
+
       //then
       expect(grid).toEqual(
         [
@@ -75,7 +75,7 @@ describe('#calculateRowNumber', () => {
     ]
 
     // when
-    const rowNumber = calculateRowNumber(columnNumber, grid);
+    const rowNumber = findFreePositionY(columnNumber, grid);
 
     // then
     expect(rowNumber).toEqual(4)

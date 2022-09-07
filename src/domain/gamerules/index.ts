@@ -15,20 +15,24 @@ export function dropToken(
   return [] as GridState;
 }
 
-export function playTurn(PlayerColor: PlayerColor, columnNumber: number, grid: GridState): GridState {
-
-  const rowNumber = calculateRowNumber(columnNumber, grid);
-
-  grid[rowNumber][columnNumber] = PlayerColor;
-
+export function playTurn(
+  playerColor: PlayerColor,
+  columnNumber: number,
+  grid: GridState
+): GridState {
+  const rowNumber = findFreePositionY(columnNumber, grid);
+  grid[rowNumber][columnNumber] = playerColor;
   return grid
 }
 
-export function calculateRowNumber(columnNumber: number, grid: GridState): number {
+export function findFreePositionY(
+  columnNumber: number,
+  grid: GridState
+): number {
   let rowNumber = grid.length - 1;
 
-  while(grid[rowNumber][columnNumber] != '_') {
-    --rowNumber
+  while (grid[rowNumber][columnNumber] != '_') {
+    rowNumber--;
   }
 
   return rowNumber;
