@@ -1,21 +1,21 @@
 import { expect, describe, it } from "vitest";
-import { playTurn } from './index';
+import { calculateRowNumber, playTurn } from './index';
 import { makeEmptyGrid } from '../grid/index';
 import { GridState, PlayerColor } from "../types";
 
 describe('#playTurn', function () {
 
-  describe('when player 1 start', function() {
-    it('should insert player id in the column number he choosed', ()=> {
+  describe('When last row is empty', function() {
+    it('should insert player column in the column number he choosed in the last row', () => {
       // given
       const columnNumber = 2
       const columns = 7
       const rows = 6
-    
+      
       // when
       let grid = makeEmptyGrid(rows)(columns)
       grid = playTurn(PlayerColor.RED, columnNumber, grid)
-      
+    
       //then
       expect(grid).toEqual(
         [
@@ -24,18 +24,17 @@ describe('#playTurn', function () {
           ['_','_','_','_','_','_','_'],
           ['_','_','_','_','_','_','_'],
           ['_','_','_','_','_','_','_'],
-          ['_','_','R','_','_','_','_'],
+          ['_','_',PlayerColor.RED,'_','_','_','_'],
         ]
         )
+      })
     })
   })
 
-  describe('when player 2 play after player 1', function () {
-    it('should insert player id in the column number he choosed', ()=> {
+  describe('When last row is not empty', function() {
+    it('Should place token in the row above the previous token', () => {
       // given
-      const columnNumber = 3
-      
-      // when
+      const columnNumber = 2
       let grid: GridState = [
         ['_','_','_','_','_','_','_'],
         ['_','_','_','_','_','_','_'],
@@ -44,8 +43,10 @@ describe('#playTurn', function () {
         ['_','_','_','_','_','_','_'],
         ['_','_',PlayerColor.RED,'_','_','_','_'],
       ]
+
+      // when
       grid = playTurn(PlayerColor.YELLOW, columnNumber, grid)
-      
+
       //then
       expect(grid).toEqual(
         [
@@ -53,11 +54,30 @@ describe('#playTurn', function () {
           ['_','_','_','_','_','_','_'],
           ['_','_','_','_','_','_','_'],
           ['_','_','_','_','_','_','_'],
-          ['_','_','_','_','_','_','_'],
-          ['_','_',PlayerColor.RED,PlayerColor.YELLOW,'_','_','_'],
+          ['_','_',PlayerColor.YELLOW,'_','_','_','_'],
+          ['_','_',PlayerColor.RED,'_','_','_','_'],
         ]
-        )
+      )
     })
   })
 
+describe('#calculateRowNumber', () => {
+  it('Should place token in the row above the previous token', () => {
+    // given
+    const columnNumber = 2
+    const grid: GridState = [
+      ['_','_','_','_','_','_','_'],
+      ['_','_','_','_','_','_','_'],
+      ['_','_','_','_','_','_','_'],
+      ['_','_','_','_','_','_','_'],
+      ['_','_','_','_','_','_','_'],
+      ['_','_',PlayerColor.RED,'_','_','_','_'],
+    ]
+
+    // when
+    const rowNumber = calculateRowNumber(columnNumber, grid);
+
+    // then
+    expect(rowNumber).toEqual(4)
+  });
 })

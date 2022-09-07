@@ -17,9 +17,19 @@ export function dropToken(
 
 export function playTurn(PlayerColor: PlayerColor, columnNumber: number, grid: GridState): GridState {
 
-  grid[grid.length-1][columnNumber] = PlayerColor;
+  const rowNumber = calculateRowNumber(columnNumber, grid);
 
-  console.log(grid);
+  grid[rowNumber][columnNumber] = PlayerColor;
 
   return grid
+}
+
+export function calculateRowNumber(columnNumber: number, grid: GridState): number {
+  let rowNumber = grid.length - 1;
+
+  while(grid[rowNumber][columnNumber] != '_') {
+    --rowNumber
+  }
+
+  return rowNumber;
 }
