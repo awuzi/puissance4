@@ -3,7 +3,7 @@ import fastifyIO from "fastify-socket.io";
 import FastifyStatic from "@fastify/static";
 // import FastifyWS, { SocketStream } from "@fastify/websocket";
 import { resolve } from "path";
-import { PlayerColor } from "../domain/types";
+import { GameAction, PlayerColor } from "../domain/types";
 
 
 const fastify = Fastify({ logger: false });
@@ -21,23 +21,23 @@ fastify.ready().then(() => {
   io.on("connection", (socket) => {
     // console.log('socket.id : ', socket.id);
 
-    socket.on('message', (data) => {
-      socket.broadcast.emit('message', data);
+    socket.on<GameAction>(GameAction.MESSAGE, (data) => {
+      socket.broadcast.emit(GameAction.MESSAGE, data);
     });
 
-    socket.on('createGame', currentState => {
+    socket.on<GameAction>(GameAction.CREATE_GAME, currentState => {
       game = currentState;
-      socket.join('game');
+      socket.join(game.gameId);
     });
 
-    socket.on('dropToken', grid => {
-      io.in('game').emit('tokenDropped', { ...game, grid });
+    socket.on<GameAction>(GameAction.DROP_TOKEN, grid => {
+      io.in(game.gameId).emit(GameAction.MESSAGE, { ...game, grid });
     });
 
-    socket.on('join', ({ gameId, playerId, playerColor }) => {
+    socket.on<GameAction>(GameAction.JOIN, ({ gameId, playerId, playerColor }) => {
       game.players.push({ id: playerId, playerColor });
       socket.join(gameId);
-      io.in('game').emit('joined', game);
+      io.in(gameId).emit(GameAction.MESSAGE, game);
     });
 
   });

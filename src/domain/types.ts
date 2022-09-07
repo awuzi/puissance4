@@ -14,15 +14,15 @@ export enum PlayerColor {
 
 export enum GameAction {
   JOIN = 'JOIN',
+  JOINED = 'JOINED',
+  MESSAGE = 'MESSAGE',
+  DROP_TOKEN = 'DROP_TOKEN',
+  DROPPED_TOKEN = 'DROPPED_TOKEN',
+  CREATE_GAME = 'CREATE_GAME',
   LEAVE = 'LEAVE',
   WIN = 'WIN',
   DRAW = 'DRAW',
   LOOSE = 'LOOSE',
 }
-
-export enum PlayerAction {
-  DROP_TOKEN = 'DROP_TOKEN'
-}
-
 
 
