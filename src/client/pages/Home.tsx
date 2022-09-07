@@ -145,7 +145,7 @@ const Home = () => {
 
       <button onClick={dropToken}>poser un jeton</button>
       <hr/>
-      <Puissance4 gameData={state.grid} setGrid={updateGrid} playerColor={PlayerColor.RED}/>
+      <Puissance4 state={state.grid} setGrid={updateGrid} playerColor={PlayerColor.RED}/>
 
       <pre>{JSON.stringify(state, null, 2)}</pre>
 
