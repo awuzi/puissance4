@@ -1,7 +1,7 @@
-import { CellState, GridState } from "../types";
+import { CellState, GridState, Row } from "../types";
 
 export const makeEmptyGrid = (rows: number) => (cols: number): GridState => Array.from(Array(rows), makeColumn(cols));
 
-function makeColumn(col: number): () => CellState[] {
-  return (): CellState[] => Array(col).fill('_');
+function makeColumn(col: number): () => Row {
+  return (): Row => Array(col).fill('_');
 }

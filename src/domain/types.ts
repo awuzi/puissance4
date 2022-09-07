@@ -1,11 +1,27 @@
 export type EmptyCell = '_';
 
-export type CellState = PlayerColor.RED | PlayerColor.YELLOW | EmptyCell;
+export type CellState =
+  PlayerColor.RED
+  | PlayerColor.YELLOW
+  | EmptyCell;
 
-export type GridState = CellState[][];
+export type GridState = Row[];
+export type Row = CellState[];
 
-export type PlayerId = 'string';
-export type GameId = 'string';
+export type PlayerId = string;
+export type GameId = string;
+
+export type Player = {
+  id: PlayerId,
+  playerColor: PlayerColor
+}
+
+export type GameState = {
+  gameId: GameId,
+  players: Player[],
+  currentPlayer: Player,
+  grid: GridState
+}
 
 export enum PlayerColor {
   RED = 'R',
@@ -14,10 +30,8 @@ export enum PlayerColor {
 
 export enum GameAction {
   JOIN = 'JOIN',
-  JOINED = 'JOINED',
-  MESSAGE = 'MESSAGE',
+  GAME_UPDATE = 'GAME_UPDATE',
   DROP_TOKEN = 'DROP_TOKEN',
-  DROPPED_TOKEN = 'DROPPED_TOKEN',
   CREATE_GAME = 'CREATE_GAME',
   LEAVE = 'LEAVE',
   WIN = 'WIN',

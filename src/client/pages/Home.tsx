@@ -1,24 +1,19 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { io, Socket } from "socket.io-client";
 import { makeEmptyGrid } from "../../domain/grid";
-import { GameAction, GameId, GridState, PlayerColor, PlayerId } from "../../domain/types";
+import { GameAction, GameId, GameState, GridState, Player, PlayerColor, PlayerId } from "../../domain/types";
+import { generateGameId, generatePlayerId } from "../../shared/helpers/uuid";
 import Puissance4 from "../components/Puissance4";
-import { v4 as uuid } from 'uuid';
 
 const socket = io('ws://localhost:8000/');
 
 const Home = () => {
   const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
   const [gameId, setGameId] = useState<string>();
-  const [state, setState] = useState<{
-    gameId: string,
-    players: { id: string, playerColor: PlayerColor }[],
-    currentPlayer: { id: string, playerColor: PlayerColor },
-    grid: GridState
-  }>({
+  const [state, setState] = useState<GameState>({
     gameId: '' as GameId,
-    players: [],
-    currentPlayer: {} as { id: PlayerId, playerColor: PlayerColor },
+    players: [] as Player[],
+    currentPlayer: {} as Player,
     grid: makeEmptyGrid(6)(7)
   });
   const [players, setPlayers] = useState<string[]>([]);
@@ -28,7 +23,7 @@ const Home = () => {
 
   useEffect(() => {
 
-    socket.on(GameAction.MESSAGE, (data: typeof state) => {
+    socket.on(GameAction.GAME_UPDATE, (data: typeof state) => {
       setState(data);
     });
 
@@ -42,9 +37,9 @@ const Home = () => {
 
 
   const createGame = () => {
-    const gameId = uuid() as GameId;
+    const gameId = generateGameId();
     setGameId(gameId);
-    const currentPlayer = { id: socket.id, playerColor: PlayerColor.RED };
+    const currentPlayer = { id: generatePlayerId(), playerColor: PlayerColor.RED };
     const currentState = {
       ...state,
       gameId,
@@ -59,7 +54,7 @@ const Home = () => {
     const currentState = {
       ...state,
       gameId: joinCode,
-      playerId: socket.id,
+      playerId: generatePlayerId(),
       playerColor: PlayerColor.YELLOW
     };
     socket.emit(GameAction.JOIN, currentState);
@@ -68,11 +63,11 @@ const Home = () => {
   const updateGrid = (grid: GridState) => {
     const currentState = {
       ...state,
-      currentPlayer: state.players.find(s => s.id !== socket.id)!,
+      currentPlayer: state.players.find(s => s.id !== state.currentPlayer.id)!,
       grid
     };
     setState(currentState);
-    socket.emit(GameAction.MESSAGE, currentState);
+    socket.emit(GameAction.GAME_UPDATE, currentState);
   }
 
   return (
