@@ -14,3 +14,22 @@ export function dropToken(
 
   return [] as GridState;
 }
+
+export function playTurn(PlayerColor: PlayerColor, columnNumber: number, grid: GridState): GridState {
+
+  const rowNumber = calculateRowNumber(columnNumber, grid);
+
+  grid[rowNumber][columnNumber] = PlayerColor;
+
+  return grid
+}
+
+export function calculateRowNumber(columnNumber: number, grid: GridState): number {
+  let rowNumber = grid.length - 1;
+
+  while(grid[rowNumber][columnNumber] != '_') {
+    --rowNumber
+  }
+
+  return rowNumber;
+}
