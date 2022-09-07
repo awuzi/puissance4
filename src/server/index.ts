@@ -9,20 +9,36 @@ const fastify = Fastify({ logger: false });
 fastify.register(FastifyStatic, { root: resolve("./public") });
 fastify.register(fastifyIO);
 
+let game: { gameId: string, players: string[] } = {
+  gameId: '',
+  players: []
+};
+
 fastify.ready().then(() => {
   const io = fastify.io;
 
   io.on("connection", (socket) => {
-    console.log('socket.id : ', socket.id);
+    // console.log('socket.id : ', socket.id);
 
     socket.on('message', (data) => {
-      // console.log('data.event : ', data.event);
-      // socket.broadcast.emit('message', { id: socket.id, ...data });
+      io.in('game').emit('message', data);
     });
 
-    socket.on('createGame', (data) => {
-      socket.emit('message', data);
+    socket.on('createGame', currentState => {
+      game = currentState;
+      socket.join('game');
     })
+
+    socket.on('dropToken', grid => {
+      io.in('game').emit('tokenDropped', { ...game, grid });
+    })
+
+    socket.on('join', ({ gameId, playerId }) => {
+      game.players.push(playerId);
+      socket.join(gameId);
+      io.in('game').emit('joined', game);
+    });
+
   });
 });
 

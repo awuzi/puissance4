@@ -10,8 +10,8 @@ function App() {
             <div className="App">
                 <Routes>
                     <Route path="*" element={<Home />} />
-                    <Route path="/index.html" element={<Home/>}/>
-                    <Route path="/game.html" element={<Game/>}/>
+                    {/*<Route path="/index" element={<Home/>}/>*/}
+                    <Route path="/game" element={<Game/>}/>
                 </Routes>
             </div>
         </>
