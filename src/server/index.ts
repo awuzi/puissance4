@@ -16,9 +16,13 @@ fastify.ready().then(() => {
     console.log('socket.id : ', socket.id);
 
     socket.on('message', (data) => {
-      console.log('data.event : ', data.event);
-      io.emit('message', { id: socket.id, ...data });
+      // console.log('data.event : ', data.event);
+      // socket.broadcast.emit('message', { id: socket.id, ...data });
     });
+
+    socket.on('createGame', (data) => {
+      socket.emit('message', data);
+    })
   });
 });
 
