@@ -88,7 +88,7 @@ const Game = () => {
         </div>
         <div className="flex w-6/12 justify-center relative">
 
-          <Puissance4 state={state.grid} playerColor={PlayerColor.RED}/>
+          <Puissance4 gameData={state.grid} playerColor={PlayerColor.RED}/>
 
           { !playing ?
              <div className="float-left bg-amber-50 bg-opacity-90 absolute text-center" style={{ height: "480px", width: "640px" }}>
