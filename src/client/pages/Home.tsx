@@ -4,36 +4,22 @@ import { makeEmptyGrid } from "../../domain/grid";
 import { GameAction, GameId, GameState, GridState, Player, PlayerColor, PlayerId } from "../../domain/types";
 import { generateGameId, generatePlayerId } from "../../shared/helpers/uuid";
 import Puissance4 from "../components/Puissance4";
-import { SocketContext } from "../context/socket";
+import { GameContext, socket } from "../context";
 
 const Home = () => {
-  const socket = useContext(SocketContext);
+  const { context, setContext } = useContext(GameContext);
   const navigate = useNavigate();
   const [gameId, setGameId] = useState<string>();
   const [joinCode, setJoinCode] = useState<string>('');
-  const [state, setState] = useState<GameState>({
-    gameId: '' as GameId,
-    players: [] as Player[],
-    currentPlayer: {} as Player,
-    grid: makeEmptyGrid(6)(7)
-  });
-
 
   useEffect(() => {
 
-    socket.on(GameAction.GAME_UPDATE, (data: typeof state) => {
-      setState(data);
-    });
-
-    return () => {
-      socket.disconnect(true);
-    }
   }, []);
 
   const handleChangeCode = (e: ChangeEvent<HTMLInputElement>) => setJoinCode(e.target.value);
 
-  const emit = (ev: GameAction, state: any) => {
-    socket.emit(ev, state);
+  const emit = (ev: GameAction, context: any) => {
+    socket.emit(ev, context);
   }
 
   const createGame = (): void => {
@@ -41,33 +27,34 @@ const Home = () => {
     setGameId(gameId);
     const currentPlayer = { id: generatePlayerId(), playerColor: PlayerColor.RED };
     const currentState = {
-      ...state,
+      ...context,
       gameId,
       currentPlayer,
       players: [currentPlayer]
     };
-    setState(currentState);
+    setContext(currentState);
     socket.emit(GameAction.CREATE_GAME, currentState);
     navigate(`/game/${gameId}`, { replace: true });
   };
 
   const joinGame = (): void => {
     const currentState = {
-      ...state,
+      ...context,
       gameId: joinCode,
       playerId: generatePlayerId(),
       playerColor: PlayerColor.YELLOW
     };
     socket.emit(GameAction.JOIN, currentState);
+    navigate(`/game/${joinCode}`, { replace: true });
   }
 
   const updateGrid = (grid: GridState): void => {
     const currentState = {
-      ...state,
-      currentPlayer: state.players.find(s => s.id !== state.currentPlayer.id)!,
+      ...context,
+      currentPlayer: context.players.find(s => s.id !== context.currentPlayer.id)!,
       grid
     };
-    setState(currentState);
+    setContext(context);
     socket.emit(GameAction.GAME_UPDATE, currentState);
   }
 
@@ -98,11 +85,11 @@ const Home = () => {
       {/*<button onClick={dropToken}>poser un jeton</button>*/}
       <hr/>
       <Puissance4
-        gameData={state.grid}
+        gameData={context.grid}
         updateGrid={updateGrid}
-        playerColor={state.currentPlayer?.playerColor}
+        playerColor={context.currentPlayer?.playerColor}
       />
-      <pre>{JSON.stringify(state, null, 2)}</pre>
+      <pre>{JSON.stringify(context, null, 2)}</pre>
 
       {/*</div>*/}
     </>

@@ -28,5 +28,4 @@ export const registerListeners = (io: Server, socket: Socket): void => {
   socket.on<GameAction>(GameAction.CREATE_GAME, createGame);
   socket.on<GameAction>(GameAction.JOIN, join);
   socket.on<GameAction>(GameAction.GAME_UPDATE, gameUpdate);
-  // socket.on<GameAction>(GameAction.DROP_TOKEN, dropToken);
 }

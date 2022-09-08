@@ -1,3 +1,6 @@
+import React from "react";
+import { Socket } from "socket.io-client";
+
 export type EmptyCell = '_';
 
 export type CellState =
@@ -10,6 +13,11 @@ export type Row = CellState[];
 
 export type PlayerId = string;
 export type GameId = string;
+
+export type Position = {
+  x: number,
+  y: number
+}
 
 export type Player = {
   id: PlayerId,
@@ -38,5 +46,3 @@ export enum GameAction {
   DRAW = 'DRAW',
   LOOSE = 'LOOSE',
 }
-
-
