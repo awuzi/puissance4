@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {findFreePositionY, playTurn} from "../../domain/gamerules";
-import {CellState, EmptyCell, GridState, PlayerColor, Position, Row} from "../../domain/types";
+import {CellState, GridState, PlayerColor, Position, WinningSequence} from "../../domain/types";
 import {CANVA_HEIGHT, CANVA_WIDTH, CLEAR_RECT_HEIGHT, CLEAR_RECT_WIDTH, CLEAR_RECT_X, CLEAR_RECT_Y, GAME_SPEED, GRID, PLAYER_ONE_COLOR, PLAYER_TWO_COLOR, TOKEN_DISTANCE_X, TOKEN_DISTANCE_Y, TOKEN_OFFSET_X, TOKEN_OFFSET_Y, TOKEN_RADIUS, WINNING_LINE_COLOR, WINNING_LINE_WIDTH} from "../constants";
 
 interface Puissance4Props {
@@ -13,11 +13,25 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [canDrop, setCanDrop] = useState(true);
+    const [winSequence, setWinSequence] = useState<boolean|WinningSequence>(false);
 
     useEffect(() => {
         defaultState();
-        //drawWinningLine([[1, 2], [1, 3]]);
+
     }, [gameData]);
+
+    useEffect(() => {
+        if (winSequence !== false && typeof winSequence == 'object') {
+            drawWinningLine({
+                    x: winSequence[0].rowNumber,
+                    y: winSequence[0].columnNumber
+                },
+                {
+                    x: winSequence[3].rowNumber,
+                    y: winSequence[3].columnNumber
+                });
+        }
+    }, [winSequence]);
 
     /**
      * Dessine la grille de jetons
@@ -43,13 +57,12 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
         for (const [column, coord] of GRID.entries()) {
             if (x < coord && canDrop) {
                 const freePosY = findFreePositionY(column, gameData);
-                // @ts-ignore
-                if (freePosY !== false) {
-                    dropTokenCanva(playerColor, freePosY, column);
-                    const updatedGrid = playTurn(playerColor, column, gameData);
-                    updateGrid!(updatedGrid); // renvoyer la data aux autres client
-                    break;
-                }
+                dropTokenCanva(playerColor, freePosY, column);
+                const {grid, isWon, winningSequence} = playTurn(playerColor, column, gameData);
+                updateGrid!(grid); // renvoyer la data aux autres client
+                console.log(isWon, winningSequence);
+                //if (isWon == true) setWinSequence(winningSequence);
+                break;
             }
         }
     }
@@ -82,6 +95,11 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
         }else drawToken(ctx, x, y);
     }
 
+    /**
+     * Calcule la position en pixels d'un jeton
+     * @param ligne
+     * @param colonne
+     */
     function calculatePosition(ligne: number, colonne: number): Position {
         return {
           x: (colonne == 0 ? TOKEN_OFFSET_X : (colonne * TOKEN_DISTANCE_X) + TOKEN_OFFSET_X),
@@ -89,17 +107,23 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
         };
     }
 
-    function drawWinningLine(winningLine: any): void {
+    /**
+     * Dessine la ligne gagnante en utilisant les deux cellules d'extremité
+     * @param winningCellOne
+     * @param winningCellTwo
+     */
+    function drawWinningLine(winningCellOne: Position, winningCellTwo: Position): void {
         const canvas = canvasRef.current;
         const ctx = canvas!.getContext('2d') as CanvasRenderingContext2D;
         ctx.strokeStyle = WINNING_LINE_COLOR;
         ctx.lineWidth = WINNING_LINE_WIDTH;
         ctx.beginPath();
-        ctx.moveTo(winningLine[0][0], winningLine[0][1]);
-        ctx.lineTo(winningLine[1][0], winningLine[1][1]);
+        const cellOne = calculatePosition(winningCellOne.x, winningCellOne.y);
+        ctx.moveTo(cellOne.x, cellOne.y);
+        const cellTwo = calculatePosition(winningCellTwo.x, winningCellTwo.y)
+        ctx.lineTo(cellTwo.x, cellTwo.y);
         ctx.stroke();
     }
-
 
     /**
      * Dessine un jeton aux coordonnés x et y
@@ -121,7 +145,9 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
                 onClick={clickGrid}
                 width={CANVA_WIDTH}
                 height={CANVA_HEIGHT}
-                className="bg-amber-50 gameCanva">
+                className="bg-amber-50 gameCanva"
+                style={{width: CANVA_WIDTH, height: CANVA_HEIGHT}}
+            >
             </canvas>
         </>
     )

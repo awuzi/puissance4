@@ -22,10 +22,8 @@ export const Game = () => {
         </div>
         <div className="flex w-6/12 justify-center relative">
 
-          {/*<Puissance4 gameData={context?.grid} updateGrid={setContext} playerColor={context?.currentPlayer.playerColor}/>*/}
-          <pre>{JSON.stringify(context, null, 2)}</pre>
-
-          {/*{!playing ?
+          <Puissance4 gameData={context?.grid} updateGrid={setContext} playerColor={context?.currentPlayer.playerColor}/>
+          {!playing ?
             <div className="float-left bg-amber-50 bg-opacity-90 absolute text-center" style={{ height: "480px", width: "640px" }}>
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold">
                 La partie est terminée
@@ -37,9 +35,10 @@ export const Game = () => {
                 </Link>
               </div>
             </div>
-            : null}*/}
+            : '' }
         </div>
       </div>
+      <pre>{JSON.stringify(context, null, 2)}</pre>
     </>
   );
 };

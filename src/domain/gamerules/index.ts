@@ -1,5 +1,5 @@
 import { DIRECTIONS, NB_OF_MATCHING_COLOR, ORIENTATION } from "../../client/constants";
-import { GridState, PlayerColor, directionsMatrix } from "../types";
+import {GridState, PlayerColor, directionsMatrix, WinningSequence} from "../types";
 
 
 export function tokenPlacement(
@@ -23,12 +23,13 @@ export function playTurn(
   playerColor: PlayerColor,
   columnNumber: number,
   grid: GridState
-): { grid: GridState, isWon: boolean} {
+): { grid: GridState, isWon: boolean, winningSequence: WinningSequence} {
+
   const lastTokenCoords = tokenPlacement(grid, columnNumber, playerColor)
 
-  isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, playerColor, grid)
+  const {isWon, winningSequence} = isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, playerColor, grid)
 
-  return { grid, isWon: isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, playerColor, grid).isWon}
+  return { grid, isWon, winningSequence }
 }
 
 export function findFreePositionY(
@@ -48,9 +49,8 @@ export function findFreePositionY(
   return rowNumber;
 }
 
-
-
 export const isGameDraw = (grid: GridState): boolean => !grid.flatMap(c => c).some(c => c === '_')
+
 
 // TODO: change function name
 export function isGameWon(
@@ -58,8 +58,7 @@ export function isGameWon(
   rowNumber: number,
   playerColor: PlayerColor,
   grid: GridState
-  // TODO: Creer un type pour winningSequence
-): { isWon: boolean, winningSequence: { rowNumber: number, columnNumber: number, color: PlayerColor}[]} {
+): { isWon: boolean, winningSequence: WinningSequence} {
   let sameMatchingColor = 1;
   const winningSequence: { rowNumber: number, columnNumber: number, color: PlayerColor}[] = [];
   
@@ -99,4 +98,4 @@ export function isGameWon(
 
   // If we reach this statement: they have NOT won the game
   return { isWon: false, winningSequence};
-};
+}
