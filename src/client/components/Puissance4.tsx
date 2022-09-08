@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {findFreePositionY, playTurn} from "../../domain/gamerules";
 import {CellState, EmptyCell, GridState, PlayerColor, Position, Row} from "../../domain/types";
+import {CANVA_HEIGHT, CANVA_WIDTH, CLEAR_RECT_HEIGHT, CLEAR_RECT_WIDTH, CLEAR_RECT_X, CLEAR_RECT_Y, GAME_SPEED, GRID, PLAYER_ONE_COLOR, PLAYER_TWO_COLOR, TOKEN_DISTANCE_X, TOKEN_DISTANCE_Y, TOKEN_OFFSET_X, TOKEN_OFFSET_Y, TOKEN_RADIUS, WINNING_LINE_COLOR, WINNING_LINE_WIDTH} from "../constants";
 
 interface Puissance4Props {
     gameData: GridState,
@@ -12,11 +13,10 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [canDrop, setCanDrop] = useState(true);
-    const grilleCoords = [100, 190, 280, 370, 460, 550, 640];
 
     useEffect(() => {
         defaultState();
-        drawWinningLine([[1, 2], [1, 3]]);
+        //drawWinningLine([[1, 2], [1, 3]]);
     }, [gameData]);
 
     /**
@@ -40,7 +40,7 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
         let rect: DOMRect = canvas!.getBoundingClientRect();
         const x = click.clientX - rect.left;
 
-        for (const [column, coord] of grilleCoords.entries()) {
+        for (const [column, coord] of GRID.entries()) {
             if (x < coord && canDrop) {
                 const freePosY = findFreePositionY(column, gameData);
                 // @ts-ignore
@@ -64,7 +64,7 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
     function dropTokenCanva(color: PlayerColor, ligne: number, colonne: number, instant?: boolean): void {
         const canvas = canvasRef.current;
         const ctx = canvas!.getContext('2d') as CanvasRenderingContext2D;
-        ctx.fillStyle = color === PlayerColor.RED ? "#c82124" : "#FFFF00";
+        ctx.fillStyle = color === PlayerColor.RED ? PLAYER_ONE_COLOR : PLAYER_TWO_COLOR;
 
         const {x, y} = calculatePosition(ligne, colonne);
 
@@ -72,7 +72,7 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
             setCanDrop(false);
             let i = 0;
             const anim = setInterval(() => {
-                i = i + 3;
+                i = i + GAME_SPEED;
                 drawToken(ctx, x, i);
                 if (i >= y) {
                     clearInterval(anim);
@@ -83,23 +83,17 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
     }
 
     function calculatePosition(ligne: number, colonne: number): Position {
-        // Constantes de pixels
-        const offsetX = 50;
-        const offsetY = 40;
-        const distanceX = 90;
-        const distanceY = 80;
-
         return {
-          x: (colonne == 0 ? offsetX : (colonne * distanceX) + offsetX),
-          y: (ligne == 0 ? offsetY : (ligne * distanceY) + offsetY)
+          x: (colonne == 0 ? TOKEN_OFFSET_X : (colonne * TOKEN_DISTANCE_X) + TOKEN_OFFSET_X),
+          y: (ligne == 0 ? TOKEN_OFFSET_Y : (ligne * TOKEN_DISTANCE_Y) + TOKEN_OFFSET_Y)
         };
     }
 
     function drawWinningLine(winningLine: any): void {
         const canvas = canvasRef.current;
         const ctx = canvas!.getContext('2d') as CanvasRenderingContext2D;
-        ctx.strokeStyle = "#3ff100";
-        ctx.lineWidth = 5;
+        ctx.strokeStyle = WINNING_LINE_COLOR;
+        ctx.lineWidth = WINNING_LINE_WIDTH;
         ctx.beginPath();
         ctx.moveTo(winningLine[0][0], winningLine[0][1]);
         ctx.lineTo(winningLine[1][0], winningLine[1][1]);
@@ -115,8 +109,8 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
      */
     function drawToken(ctx: CanvasRenderingContext2D, x: number, y: number): void {
         ctx.beginPath();
-        ctx.clearRect(x - 36, y - 39, 72, 35);
-        ctx.arc(x, y, 36, 0, 2 * Math.PI)
+        ctx.clearRect(x - CLEAR_RECT_X, y - CLEAR_RECT_Y, CLEAR_RECT_WIDTH, CLEAR_RECT_HEIGHT);
+        ctx.arc(x, y, TOKEN_RADIUS, 0, 2 * Math.PI)
         ctx.fill();
     }
 
@@ -125,8 +119,8 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
             <canvas
                 ref={canvasRef}
                 onClick={clickGrid}
-                width="640"
-                height="480"
+                width={CANVA_WIDTH}
+                height={CANVA_HEIGHT}
                 className="bg-amber-50 gameCanva">
             </canvas>
         </>
