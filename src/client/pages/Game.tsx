@@ -16,14 +16,14 @@ export const Game = () => {
 
   return (
     <>
-      <div className="h-full flex flex-row items-center justify-between select-none" style={{ height: "100vh" }}>
+      <div className="container mx-auto flex flex-col justify-center">
         <div className="flex">
           <Logo className="flex" style={{ width: "250px", height: "250px" }}/>
         </div>
         <div className="flex w-6/12 justify-center relative">
 
           {/*<Puissance4 gameData={context?.grid} updateGrid={setContext} playerColor={context?.currentPlayer.playerColor}/>*/}
-          {/*<pre>{JSON.stringify(context, null, 2)}</pre>*/}
+          <pre>{JSON.stringify(context, null, 2)}</pre>
 
           {/*{!playing ?
             <div className="float-left bg-amber-50 bg-opacity-90 absolute text-center" style={{ height: "480px", width: "640px" }}>

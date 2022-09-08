@@ -6,7 +6,7 @@ import { generateGameId, generatePlayerId } from "../../shared/helpers/uuid";
 import Puissance4 from "../components/Puissance4";
 import { GameContext, socket } from "../context";
 
-const Home = () => {
+export const Home = () => {
   const { context, setContext } = useContext(GameContext);
   const navigate = useNavigate();
   const [gameId, setGameId] = useState<string>();
@@ -95,5 +95,3 @@ const Home = () => {
     </>
   );
 }
-
-export default Home;

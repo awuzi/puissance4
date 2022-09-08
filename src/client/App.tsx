@@ -4,8 +4,8 @@ import { io } from "socket.io-client";
 import { makeEmptyGrid } from "../domain/grid";
 import { GameAction, GameId, GameState, GridState, Player } from "../domain/types";
 import { GameContext, socket } from "./context/";
-import Home from "./pages/Home";
-import Game from "./pages/Game";
+import { Home } from "./pages/Home";
+import { Game } from "./pages/Game";
 import type { Dispatch } from 'react'
 import React, { SetStateAction, useContext, useEffect, useState } from "react";
 
@@ -19,7 +19,6 @@ const App = () => {
 
   useEffect(() => {
     socket.on(GameAction.GAME_UPDATE, (data: GameState) => {
-      console.log("GameAction.GAME_UPDATE dans App : ", data);
       setContext(data);
     });
   }, []);
