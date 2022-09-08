@@ -1,45 +1,22 @@
 import Fastify from 'fastify';
 import fastifyIO from "fastify-socket.io";
 import FastifyStatic from "@fastify/static";
-// import FastifyWS, { SocketStream } from "@fastify/websocket";
 import { resolve } from "path";
+import { Server, Socket } from "socket.io";
+import { registerListeners } from "./listeners";
 
 
 const fastify = Fastify({ logger: false });
 fastify.register(FastifyStatic, { root: resolve("./public") });
 fastify.register(fastifyIO);
 
-let game: { gameId: string, players: string[] } = {
-  gameId: '',
-  players: []
-};
+fastify.ready(err => {
+  if (err) throw err;
 
-fastify.ready().then(() => {
   const io = fastify.io;
+  const onConnection = (socket: Socket): void => registerListeners(io, socket);
 
-  io.on("connection", (socket) => {
-    // console.log('socket.id : ', socket.id);
-
-    socket.on('message', (data) => {
-      io.in('game').emit('message', data);
-    });
-
-    socket.on('createGame', currentState => {
-      game = currentState;
-      socket.join('game');
-    })
-
-    socket.on('dropToken', grid => {
-      io.in('game').emit('tokenDropped', { ...game, grid });
-    })
-
-    socket.on('join', ({ gameId, playerId }) => {
-      game.players.push(playerId);
-      socket.join(gameId);
-      io.in('game').emit('joined', game);
-    });
-
-  });
+  io.on('connection', onConnection);
 });
 
 (async () => {
