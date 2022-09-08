@@ -31,8 +31,12 @@ export function findFreePositionY(
 ): number {
   let rowNumber = grid.length - 1;
 
-  while (grid[rowNumber][columnNumber] != '_') {
-    rowNumber--;
+  while(grid[rowNumber][columnNumber] != '_') {
+    --rowNumber
+
+    if(rowNumber < 0) {
+      throw new Error ('La ligne est déjà complete')
+    }
   }
 
   return rowNumber;

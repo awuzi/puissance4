@@ -80,4 +80,20 @@ describe('#calculateRowNumber', () => {
     // then
     expect(rowNumber).toEqual(4)
   });
+
+  it.only('should throw an error if the column is full ', () => {
+    // given
+    const columnNumber = 2
+    const grid: GridState = [
+      ['_','_',PlayerColor.RED,'_','_','_','_'],
+      ['_','_',PlayerColor.YELLOW,'_','_','_','_'],
+      ['_','_',PlayerColor.RED,'_','_','_','_'],
+      ['_','_',PlayerColor.YELLOW,'_','_','_','_'],
+      ['_','_',PlayerColor.RED,'_','_','_','_'],
+      ['_','_',PlayerColor.RED,'_','_','_','_'],
+    ]
+
+    // then
+    expect(() => calculateRowNumber(columnNumber, grid)).toThrowError('La ligne est déjà complete')
+  })
 })
