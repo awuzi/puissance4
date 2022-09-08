@@ -2,33 +2,33 @@ import { DIRECTIONS, NB_OF_MATCHING_COLOR, ORIENTATION } from "../../client/cons
 import { GridState, PlayerColor, directionsMatrix } from "../types";
 
 
-export function dropToken(
+export function tokenPlacement(
   grid: GridState,
-  positionX: number,
+  columnNumber: number,
   playerColor: PlayerColor
-): GridState {
-  // todo :
-  //  parcourir la grille jusqu'à la position x
-  //  une fois à la position x, trouver la première cellule vide dans la colonne en partant du bas
-  //  remplacer la cellule par la couleur du joueur en cour
-  //  retourner la nouvelle grille
+) {
 
-  return [] as GridState;
+  const rowNumber = findFreePositionY(columnNumber, grid);
+  grid[rowNumber][columnNumber] = playerColor;
+
+  const lastTokenCoords = {
+    columnNumber,
+    rowNumber
+  }
+
+  return lastTokenCoords;
 }
 
 export function playTurn(
   playerColor: PlayerColor,
   columnNumber: number,
   grid: GridState
-): GridState {
-  const rowNumber = findFreePositionY(columnNumber, grid);
-  grid[rowNumber][columnNumber] = playerColor;
+): { grid: GridState, isWon: boolean} {
+  const lastTokenCoords = tokenPlacement(grid, columnNumber, playerColor)
 
-  if (isGameWon(columnNumber, rowNumber, playerColor, grid)) {
-    console.log(`Le joueur ${playerColor} a gagner la partie`)
-  }
+  isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, playerColor, grid)
 
-  return grid
+  return { grid, isWon: isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, playerColor, grid)}
 }
 
 export function findFreePositionY(
@@ -67,18 +67,19 @@ export function isGameWon(
       let [posX, posY] = [rowNumber, columnNumber];
 
       // Add co-ordinates of 1 cell in test direction (eg "North")
-      let nextCell = grid[posX][posY];
+      const placedColor = grid[posX][posY];
 
       // Count how many matching color cells are in that direction
-      while (nextCell == playerColor) {
+      while (placedColor === playerColor) {
         try {
           // Add co-ordinates of 1 cell in test direction (eg "North")
           posX += x * ax;
           posY += y * ax;
-          nextCell = grid[posX][posY];
+
+          const nextToken = grid[posX][posY];
 
           // Test if cell is matching color
-          if (nextCell == playerColor) {
+          if (nextToken === playerColor) {
             sameMatchingColor += 1;
             // If our count reaches 4, the player has won the game
             if (sameMatchingColor >= NB_OF_MATCHING_COLOR) return true;
@@ -88,8 +89,6 @@ export function isGameWon(
           break;
         }
       }
-      // If our count reaches 4, the player has won the game
-      if (sameMatchingColor === NB_OF_MATCHING_COLOR) return true;
     }
   }
 

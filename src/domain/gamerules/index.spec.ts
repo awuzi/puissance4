@@ -1,9 +1,9 @@
 import { expect, describe, it } from "vitest";
-import { findFreePositionY, playTurn, isGameWon, isGameDraw } from './index';
+import { findFreePositionY, isGameWon, isGameDraw, tokenPlacement } from './index';
 import { makeEmptyGrid } from '../grid/index';
 import { GridState, PlayerColor } from "../types";
 
-describe('#playTurn', function () {
+describe('#tokenPlacement', function () {
 
   describe('When last row is empty', function () {
     it('should insert player column in the column number he choosed in the last row', () => {
@@ -14,54 +14,36 @@ describe('#playTurn', function () {
 
       // when
       let grid = makeEmptyGrid(rows)(columns)
-      grid = playTurn(PlayerColor.RED, columnNumber, grid)
+      const lastTokenCoords = tokenPlacement(grid, columnNumber, PlayerColor.RED)
 
       //then
-      expect(grid).toEqual(
-        [
-          ['_', '_', '_', '_', '_', '_', '_'],
-          ['_', '_', '_', '_', '_', '_', '_'],
-          ['_', '_', '_', '_', '_', '_', '_'],
-          ['_', '_', '_', '_', '_', '_', '_'],
-          ['_', '_', '_', '_', '_', '_', '_'],
-          ['_', '_', PlayerColor.RED, '_', '_', '_', '_'],
-        ]
-      )
+      expect(lastTokenCoords).toEqual({ columnNumber: 2, rowNumber: 5 })
+    })
+  })
+
+  describe('When last row is not empty', function () {
+    it('Should place token in the row above the previous token', () => {
+      // given
+      const columnNumber = 2
+      let grid: GridState = [
+        ['_', '_', '_', '_', '_', '_', '_'],
+        ['_', '_', '_', '_', '_', '_', '_'],
+        ['_', '_', '_', '_', '_', '_', '_'],
+        ['_', '_', '_', '_', '_', '_', '_'],
+        ['_', '_', '_', '_', '_', '_', '_'],
+        ['_', '_', PlayerColor.RED, '_', '_', '_', '_'],
+      ]
+
+      // when
+      const lastTokenCoords = tokenPlacement(grid, columnNumber, PlayerColor.RED)
+
+      //then
+      expect(lastTokenCoords).toEqual({ columnNumber: 2, rowNumber: 4 })
     })
   })
 })
 
-describe('When last row is not empty', function () {
-  it('Should place token in the row above the previous token', () => {
-    // given
-    const columnNumber = 2
-    let grid: GridState = [
-      ['_', '_', '_', '_', '_', '_', '_'],
-      ['_', '_', '_', '_', '_', '_', '_'],
-      ['_', '_', '_', '_', '_', '_', '_'],
-      ['_', '_', '_', '_', '_', '_', '_'],
-      ['_', '_', '_', '_', '_', '_', '_'],
-      ['_', '_', PlayerColor.RED, '_', '_', '_', '_'],
-    ]
-
-    // when
-    grid = playTurn(PlayerColor.YELLOW, columnNumber, grid)
-
-    //then
-    expect(grid).toEqual(
-      [
-        ['_', '_', '_', '_', '_', '_', '_'],
-        ['_', '_', '_', '_', '_', '_', '_'],
-        ['_', '_', '_', '_', '_', '_', '_'],
-        ['_', '_', '_', '_', '_', '_', '_'],
-        ['_', '_', PlayerColor.YELLOW, '_', '_', '_', '_'],
-        ['_', '_', PlayerColor.RED, '_', '_', '_', '_'],
-      ]
-    )
-  })
-})
-
-describe('#calculateRowNumber', () => {
+describe('#findFreePositionY', () => {
   it('Should place token in the row above the previous token', () => {
     // given
     const columnNumber = 2
@@ -195,7 +177,7 @@ describe('#isGameWon', function () {
 })
 
 
-describe('isGameDraw', () => {
+describe('#isGameDraw', () => {
 
   it('sould be a draw game', () => {
     const grid: GridState = [
