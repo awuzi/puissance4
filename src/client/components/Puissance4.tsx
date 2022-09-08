@@ -121,7 +121,9 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
                 onClick={clickGrid}
                 width={CANVA_WIDTH}
                 height={CANVA_HEIGHT}
-                className="bg-amber-50 gameCanva">
+                className="bg-amber-50 gameCanva"
+                style={{width: CANVA_WIDTH, height: CANVA_HEIGHT}}
+            >
             </canvas>
         </>
     )

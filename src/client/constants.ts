@@ -2,6 +2,8 @@
 
 // Careful, may break the game
 
+import {createCanvaGrid} from "../shared/helpers/grid";
+
 export const GAME_SPEED = 3;
 export const PLAYER_ONE_COLOR = '#c82124';
 export const PLAYER_TWO_COLOR = '#FFFF00';
@@ -10,7 +12,8 @@ export const CANVA_WIDTH = 640;
 export const CANVA_HEIGHT = 480;
 
 export const GRID_PIXEL_SPACING = 90;
-export const GRID = [GRID_PIXEL_SPACING, GRID_PIXEL_SPACING*2, GRID_PIXEL_SPACING*3, GRID_PIXEL_SPACING*4, GRID_PIXEL_SPACING*5, GRID_PIXEL_SPACING*6, GRID_PIXEL_SPACING*7];
+export const GRID_COLS = 7;
+export const GRID = createCanvaGrid(GRID_PIXEL_SPACING, GRID_COLS);
 
 export const TOKEN_OFFSET_X = 50;
 export const TOKEN_OFFSET_Y = 40;
