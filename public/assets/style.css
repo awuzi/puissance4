@@ -34,3 +34,9 @@ body {
 input {
   background-color: #fff;
 }
+
+.gameCanva {
+  height: 480px;
+  width: 640px;
+  background-image: url('/assets/grille.png');
+}

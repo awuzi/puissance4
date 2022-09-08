@@ -1,6 +1,5 @@
 import '../../public/assets/style.css'
 import { Route, Routes } from "react-router-dom";
-import { io } from "socket.io-client";
 import { socket, SocketContext } from "./context/socket";
 import Home from "./pages/Home";
 import Game from "./pages/Game";
