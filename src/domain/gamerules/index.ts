@@ -28,7 +28,7 @@ export function playTurn(
 
   isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, playerColor, grid)
 
-  return { grid, isWon: isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, playerColor, grid)}
+  return { grid, isWon: isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, playerColor, grid).isWon}
 }
 
 export function findFreePositionY(
@@ -52,23 +52,26 @@ export function findFreePositionY(
 
 export const isGameDraw = (grid: GridState): boolean => !grid.flatMap(c => c).some(c => c === '_')
 
+// TODO: change function name
 export function isGameWon(
   columnNumber: number,
   rowNumber: number,
   playerColor: PlayerColor,
   grid: GridState
-): boolean {
+  // TODO: Creer un type pour winningSequence
+): { isWon: boolean, winningSequence: { rowNumber: number, columnNumber: number, color: PlayerColor}[]} {
   let sameMatchingColor = 1;
-
+  const winningSequence: { rowNumber: number, columnNumber: number, color: PlayerColor}[] = [];
+  
   for (let ax of ORIENTATION) {
-
+    
     for (let [x, y] of DIRECTIONS) {
       // Get X/Y co-ordinates of our dropped coin
       let [posX, posY] = [rowNumber, columnNumber];
-
+      
       // Add co-ordinates of 1 cell in test direction (eg "North")
       const placedColor = grid[posX][posY];
-
+      
       // Count how many matching color cells are in that direction
       while (placedColor === playerColor) {
         try {
@@ -80,9 +83,11 @@ export function isGameWon(
 
           // Test if cell is matching color
           if (nextToken === playerColor) {
+            console.log('nextToken', nextToken);
             sameMatchingColor += 1;
+            winningSequence.push({ rowNumber: posX, columnNumber: posY, color: nextToken})
             // If our count reaches 4, the player has won the game
-            if (sameMatchingColor >= NB_OF_MATCHING_COLOR) return true;
+            if (sameMatchingColor >= NB_OF_MATCHING_COLOR) return { isWon: true, winningSequence};
           }
         } catch (error) {
           console.error(error);
@@ -93,5 +98,5 @@ export function isGameWon(
   }
 
   // If we reach this statement: they have NOT won the game
-  return false;
+  return { isWon: false, winningSequence};
 };
