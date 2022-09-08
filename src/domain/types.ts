@@ -71,22 +71,10 @@ export const directionsMatrix: {
   FORWARD: { southWest: [1, -1], northEast: [-1, 1] },
 };
 
+export type WinningToken = {
+  rowNumber: number,
+  columnNumber: number,
+  color: PlayerColor
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export type WinningSequence = WinningToken[]
