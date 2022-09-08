@@ -1,5 +1,5 @@
 import { expect, describe, it } from "vitest";
-import { findFreePositionY, playTurn, isGameWon } from './index';
+import { findFreePositionY, playTurn, isGameWon, isGameDraw } from './index';
 import { makeEmptyGrid } from '../grid/index';
 import { GridState, PlayerColor } from "../types";
 
@@ -193,3 +193,30 @@ describe('#isGameWon', function () {
     })
   })
 })
+
+
+describe('isGameDraw', () => {
+
+  it('sould be a draw game', () => {
+    const grid: GridState = [
+      [PlayerColor.RED, PlayerColor.RED, PlayerColor.YELLOW],
+      [PlayerColor.YELLOW, PlayerColor.RED, PlayerColor.YELLOW],
+      [PlayerColor.YELLOW, PlayerColor.YELLOW, PlayerColor.YELLOW],
+      [PlayerColor.RED, PlayerColor.RED, PlayerColor.RED]
+    ]
+
+    expect(isGameDraw(grid)).toBe(true);
+  });
+
+
+  it('sould not be a draw game', () => {
+    const grid: GridState = [
+      [PlayerColor.RED, '_', PlayerColor.YELLOW],
+      [PlayerColor.YELLOW, '_', PlayerColor.YELLOW],
+      [PlayerColor.YELLOW, PlayerColor.YELLOW, PlayerColor.YELLOW],
+      [PlayerColor.RED, PlayerColor.RED, PlayerColor.RED]
+    ];
+
+    expect(isGameDraw(grid)).toBe(false);
+  });
+});

@@ -26,3 +26,15 @@ export const CLEAR_RECT_HEIGHT = 35;
 
 export const WINNING_LINE_WIDTH = 5;
 export const WINNING_LINE_COLOR = "#3ff100";
+
+export const DIRECTIONS = [
+  [1, 0],
+  [0, 1],
+  [1, 1],
+  [1, -1]
+];
+
+export const ORIENTATION = [1, -1];
+
+
+export const NB_OF_MATCHING_COLOR = 4;
