@@ -11,6 +11,11 @@ export type Row = CellState[];
 export type PlayerId = string;
 export type GameId = string;
 
+export type Position = {
+  x: number,
+  y: number
+}
+
 export type Player = {
   id: PlayerId,
   playerColor: PlayerColor
@@ -38,5 +43,3 @@ export enum GameAction {
   DRAW = 'DRAW',
   LOOSE = 'LOOSE',
 }
-
-

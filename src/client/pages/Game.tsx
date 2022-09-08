@@ -82,7 +82,7 @@ const Game = () => {
 
   return (
     <>
-      <div className="h-full flex flex-row items-center justify-between" style={{ height: "100vh" }}>
+      <div className="h-full flex flex-row items-center justify-between select-none" style={{ height: "100vh" }}>
         <div className="flex">
           <Logo className="flex" style={{ width: "250px", height: "250px" }}/>
         </div>
