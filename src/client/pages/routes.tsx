@@ -7,9 +7,9 @@ const Routers = () => {
   return (
     <>
       <Routes>
-        <Route path="*" element={<Home />} />
-        <Route path="/start" element={<Home/>}/>
-        <Route path="/game/:gameId" element={<Game/>}/>
+        <Route path="/" element={<Home />} />
+        {/*<Route path="/start" element={<Home/>}/>*/}
+        <Route path="game/:gameId" element={<Game/>}/>
       </Routes>
     </>
   );

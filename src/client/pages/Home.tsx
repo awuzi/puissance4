@@ -1,24 +1,22 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
-import { io, Socket } from "socket.io-client";
+import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { makeEmptyGrid } from "../../domain/grid";
 import { GameAction, GameId, GameState, GridState, Player, PlayerColor, PlayerId } from "../../domain/types";
 import { generateGameId, generatePlayerId } from "../../shared/helpers/uuid";
 import Puissance4 from "../components/Puissance4";
-
-const socket = io('ws://localhost:8000/');
+import { SocketContext } from "../context/socket";
 
 const Home = () => {
-  const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
+  const socket = useContext(SocketContext);
+  const navigate = useNavigate();
   const [gameId, setGameId] = useState<string>();
+  const [joinCode, setJoinCode] = useState<string>('');
   const [state, setState] = useState<GameState>({
     gameId: '' as GameId,
     players: [] as Player[],
     currentPlayer: {} as Player,
     grid: makeEmptyGrid(6)(7)
   });
-  const [players, setPlayers] = useState<string[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [joinCode, setJoinCode] = useState<string>('');
 
 
   useEffect(() => {
@@ -28,15 +26,17 @@ const Home = () => {
     });
 
     return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-    };
+      socket.disconnect(true);
+    }
   }, []);
 
   const handleChangeCode = (e: ChangeEvent<HTMLInputElement>) => setJoinCode(e.target.value);
 
+  const emit = (ev: GameAction, state: any) => {
+    socket.emit(ev, state);
+  }
 
-  const createGame = () => {
+  const createGame = (): void => {
     const gameId = generateGameId();
     setGameId(gameId);
     const currentPlayer = { id: generatePlayerId(), playerColor: PlayerColor.RED };
@@ -48,9 +48,10 @@ const Home = () => {
     };
     setState(currentState);
     socket.emit(GameAction.CREATE_GAME, currentState);
+    navigate(`/game/${gameId}`, { replace: true });
   };
 
-  const joinGame = () => {
+  const joinGame = (): void => {
     const currentState = {
       ...state,
       gameId: joinCode,
@@ -60,7 +61,7 @@ const Home = () => {
     socket.emit(GameAction.JOIN, currentState);
   }
 
-  const updateGrid = (grid: GridState) => {
+  const updateGrid = (grid: GridState): void => {
     const currentState = {
       ...state,
       currentPlayer: state.players.find(s => s.id !== state.currentPlayer.id)!,
