@@ -2,6 +2,7 @@
     "name": "puissance4",
     "private": true,
     "version": "0.0.0",
+    "type": "module",
     "engines": {
         "node": "16.x"
     },
