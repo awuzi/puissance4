@@ -1,33 +1,19 @@
 import { DIRECTIONS, NB_OF_MATCHING_COLOR, ORIENTATION } from "../../client/constants";
-import { GridState, PlayerColor, directionsMatrix, WinningSequence } from "../types";
-
-
-export function tokenPlacement(
-  grid: GridState,
-  columnNumber: number,
-  playerColor: PlayerColor
-) {
-
-  const rowNumber = findFreePositionY(columnNumber, grid);
-  grid[rowNumber][columnNumber] = playerColor;
-
-  const lastTokenCoords = {
-    columnNumber,
-    rowNumber
-  }
-
-  return lastTokenCoords;
-}
+import { GridState, PlayerColor, WinningSequence } from "../types";
 
 export function playTurn(
   playerColor: PlayerColor,
   columnNumber: number,
   grid: GridState
-): { grid: GridState, isWon: boolean, winningSequence: WinningSequence } {
+  ): { grid: GridState, isWon: boolean, winningSequence: WinningSequence } {
 
-  const lastTokenCoords = tokenPlacement(grid, columnNumber, playerColor)
+  const rowNumber = findFreePositionY(columnNumber, grid);
 
-  const { isWon, winningSequence } = isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, playerColor, grid)
+  grid[rowNumber][columnNumber] = playerColor;
+
+  const winningSequence = getWinningSequence(columnNumber, rowNumber, playerColor, grid)
+
+  const isWon = isGameWon(winningSequence)
 
   return { grid, isWon, winningSequence }
 }
@@ -51,15 +37,13 @@ export function findFreePositionY(
 
 export const isGameDraw = (grid: GridState): boolean => !grid.flatMap(c => c).some(c => c === '_')
 
-
-// TODO: change function name
-export function isGameWon(
+export function getWinningSequence(
   columnNumber: number,
   rowNumber: number,
   playerColor: PlayerColor,
   grid: GridState
-): { isWon: boolean, winningSequence: WinningSequence } {
-  const winningSequence: { rowNumber: number, columnNumber: number, color: PlayerColor }[] = [];
+): WinningSequence{
+  const winningSequence: { rowNumber: number, columnNumber: number, color: PlayerColor }[] = [{ rowNumber, columnNumber, color: playerColor }];
 
   for (let ax of ORIENTATION) {
     for (let [x, y] of DIRECTIONS) {
@@ -76,7 +60,7 @@ export function isGameWon(
 
           winningSequence.push({ rowNumber: posX, columnNumber: posY, color: nextToken })
 
-          if (winningSequence.length >= NB_OF_MATCHING_COLOR) return { isWon: true, winningSequence };
+          if (isGameWon(winningSequence)) return winningSequence;
         } catch (error) {
           console.error(error);
           break;
@@ -85,5 +69,9 @@ export function isGameWon(
     }
   }
 
-  return { isWon: false, winningSequence };
+  return winningSequence;
+}
+
+export function isGameWon(winningSequence: WinningSequence) {
+  return winningSequence.length === NB_OF_MATCHING_COLOR
 }
