@@ -1,33 +1,19 @@
 import { DIRECTIONS, NB_OF_MATCHING_COLOR, ORIENTATION } from "../../client/constants";
-import {GridState, PlayerColor, directionsMatrix, WinningSequence} from "../types";
-
-
-export function tokenPlacement(
-  grid: GridState,
-  columnNumber: number,
-  playerColor: PlayerColor
-) {
-
-  const rowNumber = findFreePositionY(columnNumber, grid);
-  grid[rowNumber][columnNumber] = playerColor;
-
-  const lastTokenCoords = {
-    columnNumber,
-    rowNumber
-  }
-
-  return lastTokenCoords;
-}
+import { GridState, PlayerColor, WinningSequence } from "../types";
 
 export function playTurn(
   playerColor: PlayerColor,
   columnNumber: number,
   grid: GridState
-): { grid: GridState, isWon: boolean, winningSequence: WinningSequence} {
+  ): { grid: GridState, isWon: boolean, winningSequence: WinningSequence } {
 
-  const lastTokenCoords = tokenPlacement(grid, columnNumber, playerColor)
+  const rowNumber = findFreePositionY(columnNumber, grid);
 
-  const {isWon, winningSequence} = isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, playerColor, grid)
+  grid[rowNumber][columnNumber] = playerColor;
+
+  const winningSequence = getWinningSequence(columnNumber, rowNumber, playerColor, grid)
+
+  const isWon = isGameWon(winningSequence)
 
   return { grid, isWon, winningSequence }
 }
@@ -51,43 +37,30 @@ export function findFreePositionY(
 
 export const isGameDraw = (grid: GridState): boolean => !grid.flatMap(c => c).some(c => c === '_')
 
-
-// TODO: change function name
-export function isGameWon(
+export function getWinningSequence(
   columnNumber: number,
   rowNumber: number,
   playerColor: PlayerColor,
   grid: GridState
-): { isWon: boolean, winningSequence: WinningSequence} {
-  let sameMatchingColor = 1;
-  const winningSequence: { rowNumber: number, columnNumber: number, color: PlayerColor}[] = [];
-  
+): WinningSequence{
+  const winningSequence: { rowNumber: number, columnNumber: number, color: PlayerColor }[] = [{ rowNumber, columnNumber, color: playerColor }];
+
   for (let ax of ORIENTATION) {
-    
     for (let [x, y] of DIRECTIONS) {
-      // Get X/Y co-ordinates of our dropped coin
       let [posX, posY] = [rowNumber, columnNumber];
-      
-      // Add co-ordinates of 1 cell in test direction (eg "North")
       const placedColor = grid[posX][posY];
-      
-      // Count how many matching color cells are in that direction
       while (placedColor === playerColor) {
         try {
-          // Add co-ordinates of 1 cell in test direction (eg "North")
           posX += x * ax;
           posY += y * ax;
 
-          const nextToken = grid[posX][posY];
+          const nextToken = grid?.[posX]?.[posY];
 
-          // Test if cell is matching color
-          if (nextToken === playerColor) {
-            console.log('nextToken', nextToken);
-            sameMatchingColor += 1;
-            winningSequence.push({ rowNumber: posX, columnNumber: posY, color: nextToken})
-            // If our count reaches 4, the player has won the game
-            if (sameMatchingColor >= NB_OF_MATCHING_COLOR) return { isWon: true, winningSequence};
-          }
+          if (nextToken !== playerColor) break;
+
+          winningSequence.push({ rowNumber: posX, columnNumber: posY, color: nextToken })
+
+          if (isGameWon(winningSequence)) return winningSequence;
         } catch (error) {
           console.error(error);
           break;
@@ -96,6 +69,9 @@ export function isGameWon(
     }
   }
 
-  // If we reach this statement: they have NOT won the game
-  return { isWon: false, winningSequence};
+  return winningSequence;
+}
+
+export function isGameWon(winningSequence: WinningSequence) {
+  return winningSequence.length === NB_OF_MATCHING_COLOR
 }

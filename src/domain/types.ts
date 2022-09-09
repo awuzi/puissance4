@@ -47,29 +47,6 @@ export enum GameAction {
   LOOSE = 'LOOSE',
 }
 
-const direction = [
-  [1, 0],
-  [0, 1],
-  [1, 1],
-  [1, -1]
-];
-
-const axis = [1, -1];
-
-
-axis.forEach(axe => {
-  for (let directionElement of direction) {
-  }
-})
-
-export const directionsMatrix: {
-  [T in 'VERTICAL' | 'HORIZONTAL' | 'BACKWARD' | 'FORWARD']: { [D: string]: [number, number] }
-} = {
-  VERTICAL: { south: [1, 0], north: [-1, 0] },
-  HORIZONTAL: { east: [0, 1], west: [0, -1] },
-  BACKWARD: { southEast: [1, 1], northWest: [-1, -1] },
-  FORWARD: { southWest: [1, -1], northEast: [-1, 1] },
-};
 
 export type WinningToken = {
   rowNumber: number,
