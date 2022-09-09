@@ -1,27 +1,9 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { findFreePositionY, playTurn } from "../../domain/gamerules";
-import { CellState, GameAction, GameState, GridState, Player, PlayerColor, Position, WinningSequence } from "../../domain/types";
-import { calculatePosition } from "../../shared/helpers/canva";
-import {
-  CANVA_HEIGHT,
-  CANVA_WIDTH,
-  CLEAR_RECT_HEIGHT,
-  CLEAR_RECT_WIDTH,
-  CLEAR_RECT_X,
-  CLEAR_RECT_Y,
-  GAME_SPEED,
-  CANVA_GRID,
-  RED_COLOR,
-  YELLOW_COLOR,
-  TOKEN_DISTANCE_X,
-  TOKEN_DISTANCE_Y,
-  TOKEN_OFFSET_X,
-  TOKEN_OFFSET_Y,
-  TOKEN_RADIUS,
-  WINNING_LINE_COLOR,
-  WINNING_LINE_WIDTH, NB_OF_MATCHING_COLOR
-} from "../constants";
-import { GameContext, socket } from "../context";
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import {findFreePositionY, playTurn} from "../../domain/gamerules";
+import {CellState, GameAction, GridState, PlayerColor, Position, WinningSequence} from "../../domain/types";
+import {calculatePosition} from "../../shared/helpers/canva";
+import {CANVA_GRID, CANVA_HEIGHT, CANVA_WIDTH, CLEAR_RECT_HEIGHT, CLEAR_RECT_WIDTH, CLEAR_RECT_X, CLEAR_RECT_Y, GAME_SPEED, NB_OF_MATCHING_COLOR, RED_COLOR, TOKEN_RADIUS, WINNING_LINE_COLOR, WINNING_LINE_WIDTH, YELLOW_COLOR} from "../constants";
+import {GameContext, socket} from "../context";
 
 
 const Puissance4 = () => {
@@ -45,7 +27,7 @@ const Puissance4 = () => {
           y: winSequence[3].columnNumber
         });
     }
-  }, [winSequence]);
+  }, [context]);
 
   /**
    * Dessine la grille de jetons
@@ -99,10 +81,10 @@ const Puissance4 = () => {
    * @param column
    * @param translate
    */
-  function dropTokenCanva(color: PlayerColor, row: number, column: number, translate?: boolean): boolean {
+  function dropTokenCanva(color: PlayerColor, row: number, column: number, translate?: boolean): void {
     const canvas = canvasRef.current;
     const ctx = canvas!.getContext('2d') as CanvasRenderingContext2D;
-    ctx.fillStyle = color == 'R' ? RED_COLOR : YELLOW_COLOR;
+    ctx.fillStyle = color == PlayerColor.RED ? RED_COLOR : YELLOW_COLOR;
 
     const { x, y } = calculatePosition(row, column);
 
@@ -119,7 +101,6 @@ const Puissance4 = () => {
     } else {
       drawToken(ctx, x, y);
     }
-    return true;
   }
 
   /**
