@@ -19,6 +19,7 @@ const App = () => {
 
   useEffect(() => {
     socket.on(GameAction.GAME_UPDATE, (data: GameState) => {
+      console.log('GameAction.GAME_UPDATE : ', data);
       setContext(data);
     });
   }, []);

@@ -12,16 +12,6 @@ export const Home = () => {
   const [gameId, setGameId] = useState<string>();
   const [joinCode, setJoinCode] = useState<string>('');
 
-  useEffect(() => {
-
-  }, []);
-
-  const handleChangeCode = (e: ChangeEvent<HTMLInputElement>) => setJoinCode(e.target.value);
-
-  const emit = (ev: GameAction, context: any) => {
-    socket.emit(ev, context);
-  }
-
   const createGame = (): void => {
     const gameId = generateGameId();
     setGameId(gameId);
@@ -38,6 +28,9 @@ export const Home = () => {
   };
 
   const joinGame = (): void => {
+    if (!joinCode?.trim()) {
+      alert('Merci de renseigner un code d\'accès valide');
+    }
     const currentState = {
       ...context,
       gameId: joinCode,
@@ -46,16 +39,6 @@ export const Home = () => {
     };
     socket.emit(GameAction.JOIN, currentState);
     navigate(`/game/${joinCode}`, { replace: true });
-  }
-
-  const updateGrid = (grid: GridState): void => {
-    const currentState = {
-      ...context,
-      currentPlayer: context.players.find(s => s.id !== context.currentPlayer.id)!,
-      grid
-    };
-    setContext(context);
-    socket.emit(GameAction.GAME_UPDATE, currentState);
   }
 
   return (
@@ -74,7 +57,7 @@ export const Home = () => {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2" type="text"
             placeholder={'Entrer le code de la partie'}
             value={joinCode}
-            onChange={handleChangeCode}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setJoinCode(e.target.value)}
           />
           <button onClick={joinGame} className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg p-2">
             Rejoindre partie
@@ -84,11 +67,7 @@ export const Home = () => {
 
       {/*<button onClick={dropToken}>poser un jeton</button>*/}
       <hr/>
-      <Puissance4
-        gameData={context.grid}
-        updateGrid={updateGrid}
-        playerColor={context.currentPlayer?.playerColor}
-      />
+      <Puissance4/>
       <pre>{JSON.stringify(context, null, 2)}</pre>
 
       {/*</div>*/}
