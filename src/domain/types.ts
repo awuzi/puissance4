@@ -47,21 +47,6 @@ export enum GameAction {
   LOOSE = 'LOOSE',
 }
 
-const direction = [
-  [1, 0],
-  [0, 1],
-  [1, 1],
-  [1, -1]
-];
-
-const axis = [1, -1];
-
-
-axis.forEach(axe => {
-  for (let directionElement of direction) {
-  }
-})
-
 export const directionsMatrix: {
   [T in 'VERTICAL' | 'HORIZONTAL' | 'BACKWARD' | 'FORWARD']: { [D: string]: [number, number] }
 } = {

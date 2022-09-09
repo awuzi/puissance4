@@ -1,49 +1,24 @@
 import { expect, describe, it } from "vitest";
-import { findFreePositionY, isGameWon, isGameDraw, tokenPlacement } from './index';
+import { findFreePositionY, isGameWon, isGameDraw, getWinningSequence } from './index';
 import { makeEmptyGrid } from '../grid/index';
 import { GridState, PlayerColor } from "../types";
 
-describe('#tokenPlacement', function () {
-
+describe('#findFreePositionY', () => {
   describe('When last row is empty', function () {
     it('should insert player column in the column number he choosed in the last row', () => {
       // given
       const columnNumber = 2
       const columns = 7
       const rows = 6
-
+  
       // when
       let grid = makeEmptyGrid(rows)(columns)
-      const lastTokenCoords = tokenPlacement(grid, columnNumber, PlayerColor.RED)
-
+      const rowNumber = findFreePositionY(columnNumber, grid)
+  
       //then
-      expect(lastTokenCoords).toEqual({ columnNumber: 2, rowNumber: 5 })
+      expect(rowNumber).toEqual(5)
     })
   })
-
-  describe('When last row is not empty', function () {
-    it('Should place token in the row above the previous token', () => {
-      // given
-      const columnNumber = 2
-      let grid: GridState = [
-        ['_', '_', '_', '_', '_', '_', '_'],
-        ['_', '_', '_', '_', '_', '_', '_'],
-        ['_', '_', '_', '_', '_', '_', '_'],
-        ['_', '_', '_', '_', '_', '_', '_'],
-        ['_', '_', '_', '_', '_', '_', '_'],
-        ['_', '_', PlayerColor.RED, '_', '_', '_', '_'],
-      ]
-
-      // when
-      const lastTokenCoords = tokenPlacement(grid, columnNumber, PlayerColor.RED)
-
-      //then
-      expect(lastTokenCoords).toEqual({ columnNumber: 2, rowNumber: 4 })
-    })
-  })
-})
-
-describe('#findFreePositionY', () => {
   it('Should place token in the row above the previous token', () => {
     // given
     const columnNumber = 2
@@ -80,10 +55,10 @@ describe('#findFreePositionY', () => {
   })
 })
 
-describe('#isGameWon', function () {
+describe('#getWinningSequence', function () {
   describe('When less than four are aligned', function () {
 
-    it('should return false', function () {
+    it('should return a winningSequence with less than 4 elements', function () {
       // given
       const grid: GridState = [
         ['_', '_', '_', '_', '_', '_', '_'],
@@ -99,10 +74,11 @@ describe('#isGameWon', function () {
       }
 
       // when
-      const gameWon = isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, PlayerColor.RED, grid)
+      const winningSequence = getWinningSequence(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, PlayerColor.RED, grid)
 
       // then
-      expect(gameWon).toBe(false);
+      expect(winningSequence).toEqual(expect.arrayContaining([{ color: "R", columnNumber: 1, rowNumber: 5 }, { color: "R", columnNumber: 2, rowNumber: 5 }]));
+      expect(winningSequence.length).toEqual(2);
     });
   })
 
@@ -124,10 +100,11 @@ describe('#isGameWon', function () {
       }
 
       // when
-      const gameWon = isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, PlayerColor.RED, grid)
+      const winningSequence = getWinningSequence(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, PlayerColor.RED, grid)
 
       // then
-      expect(gameWon).toBe(true);
+      expect(winningSequence).toEqual(expect.arrayContaining([{ color: "R", columnNumber: 0, rowNumber: 5 }, { color: "R", columnNumber: 1, rowNumber: 5 }, { color: "R", columnNumber: 2, rowNumber: 5 }, { color: "R", columnNumber: 3, rowNumber: 5 }]));
+      expect(winningSequence.length).toBe(4);
     })
 
     it('should return true vertically', function () {
@@ -146,10 +123,11 @@ describe('#isGameWon', function () {
       }
 
       // when
-      const gameWon = isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, PlayerColor.RED, grid)
+      const winningSequence = getWinningSequence(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, PlayerColor.RED, grid)
 
       // then
-      expect(gameWon).toBe(true);
+      expect(winningSequence).toEqual(expect.arrayContaining([{ color: "R", columnNumber: 0, rowNumber: 5 }, { color: "R", columnNumber: 0, rowNumber: 4 }, { color: "R", columnNumber: 0, rowNumber: 3 }, { color: "R", columnNumber: 0, rowNumber: 2 }]));
+      expect(winningSequence.length).toBe(4);
     })
 
     it('should return true diagonally', function () {
@@ -168,10 +146,11 @@ describe('#isGameWon', function () {
       }
 
       // when
-      const gameWon = isGameWon(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, PlayerColor.RED, grid)
+      const winningSequence = getWinningSequence(lastTokenCoords.columnNumber, lastTokenCoords.rowNumber, PlayerColor.RED, grid)
 
       // then
-      expect(gameWon).toBe(true);
+      expect(winningSequence).toEqual(expect.arrayContaining([{ color: "R", columnNumber: 0, rowNumber: 5 }, { color: "R", columnNumber: 1, rowNumber: 4 }, { color: "R", columnNumber: 2, rowNumber: 3 }, { color: "R", columnNumber: 3, rowNumber: 2 }]));
+      expect(winningSequence.length).toBe(4);
     })
   })
 })
