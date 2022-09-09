@@ -61,7 +61,7 @@ const Puissance4 = () => {
 
   /**
    * Calcule la colonne sur laquelle le joueur a cliqué
-   * @param click
+   * @param event
    */
   function onGridClick(event: React.MouseEvent): void {
     if (localStorage.getItem('playerId') === context.currentPlayer.id) {
@@ -72,13 +72,12 @@ const Puissance4 = () => {
       for (const [column, coord] of CANVA_GRID.entries()) {
         if (x < coord) {
           const freePosY = findFreePositionY(column, context.grid);
-          dropTokenCanva(storedTokenColor, freePosY, column);
-          const { grid, isWon, winningSequence } = playTurn(storedTokenColor, column, context.grid);
-          if (isWon == true) setWinSequence(winningSequence);
+            dropTokenCanva(storedTokenColor, freePosY, column)
+            const {grid, isWon, winningSequence} = playTurn(storedTokenColor, column, context.grid);
+            if (isWon == true) setWinSequence(winningSequence);
           break;
         }
       }
-      updateGrid(context.grid); // renvoyer la data aux autres client
     }
   }
 
@@ -100,12 +99,11 @@ const Puissance4 = () => {
    * @param column
    * @param translate
    */
-  function dropTokenCanva(color: PlayerColor, row: number, column: number, translate?: boolean): void {
+  function dropTokenCanva(color: PlayerColor, row: number, column: number, translate?: boolean): boolean {
     const canvas = canvasRef.current;
     const ctx = canvas!.getContext('2d') as CanvasRenderingContext2D;
-    ctx.fillStyle = color === PlayerColor.RED ? RED_COLOR : YELLOW_COLOR;
+    ctx.fillStyle = color == 'R' ? RED_COLOR : YELLOW_COLOR;
 
-    console.log('dropped color : ', color);
     const { x, y } = calculatePosition(row, column);
 
     if (!translate) {
@@ -115,11 +113,13 @@ const Puissance4 = () => {
         drawToken(ctx, x, i);
         if (i >= y) {
           clearInterval(animation);
+          updateGrid(context.grid); // renvoyer la data aux autres client
         }
       }, 1);
     } else {
       drawToken(ctx, x, y);
     }
+    return true;
   }
 
   /**
