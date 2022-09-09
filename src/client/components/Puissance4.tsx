@@ -62,7 +62,7 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
                 updateGrid!(grid); // renvoyer la data aux autres client
                 console.log(isWon, winningSequence);
                 //if (isWon == true) setWinSequence(winningSequence);
-                break;
+                return;
             }
         }
     }
@@ -146,8 +146,7 @@ const Puissance4 = ({gameData, playerColor, updateGrid}: Puissance4Props) => {
                 width={CANVA_WIDTH}
                 height={CANVA_HEIGHT}
                 className="bg-amber-50 gameCanva"
-                style={{width: CANVA_WIDTH, height: CANVA_HEIGHT}}
-            >
+                style={{width: CANVA_WIDTH, height: CANVA_HEIGHT}}>
             </canvas>
         </>
     )
