@@ -4,6 +4,7 @@ import {CellState, GameAction, GridState, PlayerColor, Position, WinningSequence
 import {calculatePosition} from "../../shared/helpers/canva";
 import {CANVA_GRID, CANVA_HEIGHT, CANVA_WIDTH, CLEAR_RECT_HEIGHT, CLEAR_RECT_WIDTH, CLEAR_RECT_X, CLEAR_RECT_Y, GAME_SPEED, NB_OF_MATCHING_COLOR, RED_COLOR, TOKEN_RADIUS, WINNING_LINE_COLOR, WINNING_LINE_WIDTH, YELLOW_COLOR} from "../constants";
 import {GameContext, socket} from "../context";
+import Link from "./Link";
 
 
 const Puissance4 = () => {
@@ -11,12 +12,11 @@ const Puissance4 = () => {
   const { context, setContext } = useContext(GameContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [winSequence, setWinSequence] = useState<WinningSequence>([]);
+  const [playing, setPlaying] = useState(true);
 
   useEffect(() => {
     defaultState();
-  }, [context]);
 
-  useEffect(() => {
     if (winSequence.length >= NB_OF_MATCHING_COLOR) {
       drawWinningLine({
           x: winSequence[0].rowNumber,
@@ -26,6 +26,11 @@ const Puissance4 = () => {
           x: winSequence[3].rowNumber,
           y: winSequence[3].columnNumber
         });
+
+      const winningFrame = setTimeout(() => {
+        setPlaying(false);
+        clearInterval(winningFrame);
+      }, 5000);
     }
   }, [context]);
 
@@ -148,6 +153,19 @@ const Puissance4 = () => {
         style={{ width: CANVA_WIDTH, height: CANVA_HEIGHT }}
       >
       </canvas>
+      {!playing ?
+          <div className="float-left bg-amber-50 bg-opacity-90 absolute text-center" style={{ height: "480px", width: "640px" }}>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold">
+              La partie est terminée
+              <br/>
+              <Link route="/">
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-5">
+                  Nouvelle partie
+                </button>
+              </Link>
+            </div>
+          </div>
+          : ''}
     </>
   )
 }
