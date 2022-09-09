@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { findFreePositionY, playTurn } from "../../domain/gamerules";
-import { CellState, GameAction, GameState, GridState, PlayerColor, Position, WinningSequence } from "../../domain/types";
+import { CellState, GameAction, GameState, GridState, Player, PlayerColor, Position, WinningSequence } from "../../domain/types";
+import { calculatePosition } from "../../shared/helpers/canva";
 import {
   CANVA_HEIGHT,
   CANVA_WIDTH,
@@ -9,16 +10,16 @@ import {
   CLEAR_RECT_X,
   CLEAR_RECT_Y,
   GAME_SPEED,
-  GRID,
-  PLAYER_ONE_COLOR,
-  PLAYER_TWO_COLOR,
+  CANVA_GRID,
+  RED_COLOR,
+  YELLOW_COLOR,
   TOKEN_DISTANCE_X,
   TOKEN_DISTANCE_Y,
   TOKEN_OFFSET_X,
   TOKEN_OFFSET_Y,
   TOKEN_RADIUS,
   WINNING_LINE_COLOR,
-  WINNING_LINE_WIDTH
+  WINNING_LINE_WIDTH, NB_OF_MATCHING_COLOR
 } from "../constants";
 import { GameContext, socket } from "../context";
 
@@ -27,15 +28,14 @@ const Puissance4 = () => {
 
   const { context, setContext } = useContext(GameContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [canDrop, setCanDrop] = useState(true);
-  const [winSequence, setWinSequence] = useState<boolean | WinningSequence>(false);
+  const [winSequence, setWinSequence] = useState<WinningSequence>([]);
 
   useEffect(() => {
     defaultState();
   }, [context]);
 
   useEffect(() => {
-    if (winSequence !== false && typeof winSequence == 'object') {
+    if (winSequence.length >= NB_OF_MATCHING_COLOR) {
       drawWinningLine({
           x: winSequence[0].rowNumber,
           y: winSequence[0].columnNumber
@@ -52,9 +52,9 @@ const Puissance4 = () => {
    */
   function defaultState(): void {
     context.grid.forEach((row: CellState[], rowIndex: number) => {
-      row.forEach((col: CellState, colIndex: number) => {
+      row.forEach((color: CellState, colIndex: number) => {
         // On ne dessine que les cellules remplies
-        if (col !== "_") dropTokenCanva(col, rowIndex, colIndex, true);
+        if (color !== "_") dropTokenCanva(color, rowIndex, colIndex, true);
       });
     });
   }
@@ -63,20 +63,22 @@ const Puissance4 = () => {
    * Calcule la colonne sur laquelle le joueur a cliqué
    * @param click
    */
-  function clickGrid(click: React.MouseEvent): void {
-    const canvas = canvasRef.current
-    let rect: DOMRect = canvas!.getBoundingClientRect();
-    const x = click.clientX - rect.left;
-
-    for (const [column, coord] of GRID.entries()) {
-      if (x < coord && canDrop) {
-        const freePosY = findFreePositionY(column, context.grid);
-        dropTokenCanva(context.currentPlayer.playerColor, freePosY, column);
-        const { grid, isWon, winningSequence } = playTurn(context.currentPlayer.playerColor, column, context.grid);
-        updateGrid!(grid); // renvoyer la data aux autres client
-        if (isWon == true) setWinSequence(winningSequence);
-        break;
+  function onGridClick(event: React.MouseEvent): void {
+    if (localStorage.getItem('playerId') === context.currentPlayer.id) {
+      const canvas = canvasRef.current
+      let rect: DOMRect = canvas!.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const storedTokenColor = localStorage.getItem('playerColor') as PlayerColor;
+      for (const [column, coord] of CANVA_GRID.entries()) {
+        if (x < coord) {
+          const freePosY = findFreePositionY(column, context.grid);
+          dropTokenCanva(storedTokenColor, freePosY, column);
+          const { grid, isWon, winningSequence } = playTurn(storedTokenColor, column, context.grid);
+          if (isWon == true) setWinSequence(winningSequence);
+          break;
+        }
       }
+      updateGrid(context.grid); // renvoyer la data aux autres client
     }
   }
 
@@ -86,7 +88,7 @@ const Puissance4 = () => {
       currentPlayer: context.players.find(s => s.id !== context.currentPlayer.id)!,
       grid
     };
-    setContext(context);
+    setContext(currentState);
     socket.emit(GameAction.GAME_UPDATE, currentState);
   }
 
@@ -94,41 +96,30 @@ const Puissance4 = () => {
   /**
    * Calcul l'emplacement du jeton sur la grille + Animation de chute du jeton
    * @param color
-   * @param ligne
-   * @param colonne
-   * @param instant
+   * @param row
+   * @param column
+   * @param translate
    */
-  function dropTokenCanva(color: PlayerColor, ligne: number, colonne: number, instant?: boolean): void {
+  function dropTokenCanva(color: PlayerColor, row: number, column: number, translate?: boolean): void {
     const canvas = canvasRef.current;
     const ctx = canvas!.getContext('2d') as CanvasRenderingContext2D;
-    ctx.fillStyle = color === PlayerColor.RED ? PLAYER_ONE_COLOR : PLAYER_TWO_COLOR;
+    ctx.fillStyle = color === PlayerColor.RED ? RED_COLOR : YELLOW_COLOR;
 
-    const { x, y } = calculatePosition(ligne, colonne);
+    console.log('dropped color : ', color);
+    const { x, y } = calculatePosition(row, column);
 
-    if (!instant) {
-      setCanDrop(false);
+    if (!translate) {
       let i = 0;
-      const anim = setInterval(() => {
+      const animation = setInterval(() => {
         i = i + GAME_SPEED;
         drawToken(ctx, x, i);
         if (i >= y) {
-          clearInterval(anim);
-          setCanDrop(true);
+          clearInterval(animation);
         }
       }, 1);
-    } else drawToken(ctx, x, y);
-  }
-
-  /**
-   * Calcule la position en pixels d'un jeton
-   * @param ligne
-   * @param colonne
-   */
-  function calculatePosition(ligne: number, colonne: number): Position {
-    return {
-      x: (colonne == 0 ? TOKEN_OFFSET_X : (colonne * TOKEN_DISTANCE_X) + TOKEN_OFFSET_X),
-      y: (ligne == 0 ? TOKEN_OFFSET_Y : (ligne * TOKEN_DISTANCE_Y) + TOKEN_OFFSET_Y)
-    };
+    } else {
+      drawToken(ctx, x, y);
+    }
   }
 
   /**
@@ -136,15 +127,18 @@ const Puissance4 = () => {
    * @param winningCellOne
    * @param winningCellTwo
    */
-  function drawWinningLine(winningCellOne: Position, winningCellTwo: Position): void {
+  function drawWinningLine(
+    { x: firstX, y: firstY }: Position,
+    { x: lastX, y: lastY }: Position
+  ): void {
     const canvas = canvasRef.current;
     const ctx = canvas!.getContext('2d') as CanvasRenderingContext2D;
     ctx.strokeStyle = WINNING_LINE_COLOR;
     ctx.lineWidth = WINNING_LINE_WIDTH;
     ctx.beginPath();
-    const cellOne = calculatePosition(winningCellOne.x, winningCellOne.y);
+    const cellOne = calculatePosition(firstX, firstY);
     ctx.moveTo(cellOne.x, cellOne.y);
-    const cellTwo = calculatePosition(winningCellTwo.x, winningCellTwo.y)
+    const cellTwo = calculatePosition(lastX, lastY)
     ctx.lineTo(cellTwo.x, cellTwo.y);
     ctx.stroke();
   }
@@ -166,7 +160,7 @@ const Puissance4 = () => {
     <>
       <canvas
         ref={canvasRef}
-        onClick={clickGrid}
+        onClick={onGridClick}
         width={CANVA_WIDTH}
         height={CANVA_HEIGHT}
         className="bg-amber-50 gameCanva"
