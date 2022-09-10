@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { findFreePositionY, playTurn } from "../../domain/gamerules";
+import {findFreePositionY, isGameDraw, playTurn} from "../../domain/gamerules";
 import {CellState, GameAction, GameId, GridState, Player, PlayerColor, Position, WinningSequence} from "../../domain/types";
 import { calculatePosition } from "../../shared/helpers/canva";
 import {
@@ -30,6 +30,7 @@ const Puissance4 = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [winSequence, setWinSequence] = useState<WinningSequence>([]);
   const [playing, setPlaying] = useState(true);
+  const [gameDraw, setGameDraw] = useState(false);
 
   useEffect(() => {
     defaultState();
@@ -80,9 +81,13 @@ const Puissance4 = () => {
       for (const [column, coord] of CANVA_GRID.entries()) {
         if (x < coord) {
           const freePosY = findFreePositionY(column, context.grid);
-          dropTokenCanva(storedTokenColor, freePosY, column)
-          const { grid, isWon, winningSequence } = playTurn(storedTokenColor, column, context.grid);
-          if (isWon == true) setWinSequence(winningSequence);
+            dropTokenCanva(storedTokenColor, freePosY, column)
+            const {grid, isWon, winningSequence} = playTurn(storedTokenColor, column, context.grid);
+            if (isWon == true) setWinSequence(winningSequence);
+            if (isGameDraw(grid)) {
+              setGameDraw(true);
+              setPlaying(false);
+            }
           break;
         }
       }
@@ -177,7 +182,7 @@ const Puissance4 = () => {
       {!playing ?
         <div className="float-left bg-amber-50 bg-opacity-90 absolute text-center" style={{ height: "480px", width: "640px" }}>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold">
-            La partie est terminée
+            La partie est terminée {gameDraw ? "en égalité" : (context.currentPlayer.playerColor == PlayerColor.RED) ? "et le joueur Jaune a gagné" : "et le joueur Rouge a gagné"}
             <br/>
             <button onClick={backHome} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-5">
               Retour à l'accueil
