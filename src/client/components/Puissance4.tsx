@@ -1,14 +1,31 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
-import {findFreePositionY, playTurn} from "../../domain/gamerules";
-import {CellState, GameAction, GridState, PlayerColor, Position, WinningSequence} from "../../domain/types";
-import {calculatePosition} from "../../shared/helpers/canva";
-import {CANVA_GRID, CANVA_HEIGHT, CANVA_WIDTH, CLEAR_RECT_HEIGHT, CLEAR_RECT_WIDTH, CLEAR_RECT_X, CLEAR_RECT_Y, GAME_SPEED, NB_OF_MATCHING_COLOR, RED_COLOR, TOKEN_RADIUS, WINNING_LINE_COLOR, WINNING_LINE_WIDTH, YELLOW_COLOR} from "../constants";
-import {GameContext, socket} from "../context";
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import { findFreePositionY, playTurn } from "../../domain/gamerules";
+import { CellState, GameAction, GridState, PlayerColor, Position, WinningSequence } from "../../domain/types";
+import { calculatePosition } from "../../shared/helpers/canva";
+import {
+  CANVA_GRID,
+  CANVA_HEIGHT,
+  CANVA_WIDTH,
+  CLEAR_RECT_HEIGHT,
+  CLEAR_RECT_WIDTH,
+  CLEAR_RECT_X,
+  CLEAR_RECT_Y,
+  GAME_SPEED,
+  NB_OF_MATCHING_COLOR,
+  RED_COLOR,
+  TOKEN_RADIUS,
+  WINNING_LINE_COLOR,
+  WINNING_LINE_WIDTH,
+  YELLOW_COLOR
+} from "../constants";
+import { GameContext, socket } from "../context";
 import Link from "./Link";
 
 
 const Puissance4 = () => {
 
+  const navigate = useNavigate();
   const { context, setContext } = useContext(GameContext);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [winSequence, setWinSequence] = useState<WinningSequence>([]);
@@ -18,14 +35,7 @@ const Puissance4 = () => {
     defaultState();
 
     if (winSequence.length >= NB_OF_MATCHING_COLOR) {
-      drawWinningLine({
-          x: winSequence[0].rowNumber,
-          y: winSequence[0].columnNumber
-        },
-        {
-          x: winSequence[3].rowNumber,
-          y: winSequence[3].columnNumber
-        });
+      drawWinningLine(winSequence[0], winSequence[3]);
 
       const winningFrame = setTimeout(() => {
         setPlaying(false);
@@ -33,6 +43,12 @@ const Puissance4 = () => {
       }, 5000);
     }
   }, [context]);
+
+
+  const backHome = () => {
+    // todo : reset context
+    navigate('/', { replace: true });
+  }
 
   /**
    * Dessine la grille de jetons
@@ -59,9 +75,10 @@ const Puissance4 = () => {
       for (const [column, coord] of CANVA_GRID.entries()) {
         if (x < coord) {
           const freePosY = findFreePositionY(column, context.grid);
-            dropTokenCanva(storedTokenColor, freePosY, column)
-            const {grid, isWon, winningSequence} = playTurn(storedTokenColor, column, context.grid);
-            if (isWon == true) setWinSequence(winningSequence);
+          dropTokenCanva(storedTokenColor, freePosY, column)
+          const { grid, isWon, winningSequence } = playTurn(storedTokenColor, column, context.grid);
+          console.log('winningSequence : ', winningSequence, isWon);
+          if (isWon == true) setWinSequence(winningSequence);
           break;
         }
       }
@@ -122,9 +139,9 @@ const Puissance4 = () => {
     ctx.strokeStyle = WINNING_LINE_COLOR;
     ctx.lineWidth = WINNING_LINE_WIDTH;
     ctx.beginPath();
-    const cellOne = calculatePosition(firstX, firstY);
+    const cellOne = calculatePosition(firstY, firstX);
+    const cellTwo = calculatePosition(lastY, lastX)
     ctx.moveTo(cellOne.x, cellOne.y);
-    const cellTwo = calculatePosition(lastX, lastY)
     ctx.lineTo(cellTwo.x, cellTwo.y);
     ctx.stroke();
   }
@@ -154,18 +171,18 @@ const Puissance4 = () => {
       >
       </canvas>
       {!playing ?
-          <div className="float-left bg-amber-50 bg-opacity-90 absolute text-center" style={{ height: "480px", width: "640px" }}>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold">
-              La partie est terminée
-              <br/>
-              <Link route="/">
-                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-5">
-                  Nouvelle partie
-                </button>
-              </Link>
-            </div>
+        <div className="float-left bg-amber-50 bg-opacity-90 absolute text-center" style={{ height: "480px", width: "640px" }}>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold">
+            La partie est terminée
+            <br/>
+            {/*<Link route="/">*/}
+            <button onClick={backHome} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-5">
+              Nouvelle partie
+            </button>
+            {/*</Link>*/}
           </div>
-          : ''}
+        </div>
+        : ''}
     </>
   )
 }
