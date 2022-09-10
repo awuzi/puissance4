@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { findFreePositionY, playTurn } from "../../domain/gamerules";
-import { CellState, GameAction, GridState, PlayerColor, Position, WinningSequence } from "../../domain/types";
+import {CellState, GameAction, GameId, GridState, Player, PlayerColor, Position, WinningSequence} from "../../domain/types";
 import { calculatePosition } from "../../shared/helpers/canva";
 import {
   CANVA_GRID,
@@ -20,7 +20,7 @@ import {
   YELLOW_COLOR
 } from "../constants";
 import { GameContext, socket } from "../context";
-import Link from "./Link";
+import {makeEmptyGrid} from "../../domain/grid";
 
 
 const Puissance4 = () => {
@@ -46,7 +46,12 @@ const Puissance4 = () => {
 
 
   const backHome = () => {
-    // todo : reset context
+    setContext({
+      gameId: '' as GameId,
+      players: [] as Player[],
+      currentPlayer: {} as Player,
+      grid: makeEmptyGrid(6)(7)
+    });
     navigate('/', { replace: true });
   }
 
@@ -77,7 +82,6 @@ const Puissance4 = () => {
           const freePosY = findFreePositionY(column, context.grid);
           dropTokenCanva(storedTokenColor, freePosY, column)
           const { grid, isWon, winningSequence } = playTurn(storedTokenColor, column, context.grid);
-          console.log('winningSequence : ', winningSequence, isWon);
           if (isWon == true) setWinSequence(winningSequence);
           break;
         }
@@ -175,11 +179,9 @@ const Puissance4 = () => {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold">
             La partie est terminée
             <br/>
-            {/*<Link route="/">*/}
             <button onClick={backHome} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-5">
-              Nouvelle partie
+              Retour à l'accueil
             </button>
-            {/*</Link>*/}
           </div>
         </div>
         : ''}
