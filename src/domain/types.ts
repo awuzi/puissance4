@@ -49,8 +49,8 @@ export enum GameAction {
 
 
 export type WinningToken = {
-  rowNumber: number,
-  columnNumber: number,
+  x: number,
+  y: number,
   color: PlayerColor
 }
 
