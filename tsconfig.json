@@ -20,7 +20,6 @@
         "isolatedModules": false,
         "jsx": "react-jsx",
         "project":"src",
-        "rootDir": "src",
     },
     "include": [
         "src"
