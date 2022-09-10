@@ -12,6 +12,7 @@
         "start:client": "vite",
         "start": "npx esmo src/server/server.ts",
         "build": "esbuild src/server/*.ts --platform=node --outdir=build --resolve-extensions=.js",
+        "tsc": "tsc",
         "test": "vitest",
         "test:watch": "vitest watch"
     },

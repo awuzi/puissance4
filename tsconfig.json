@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "target": "ESNext",
+        "outDir": "build",
         "useDefineForClassFields": true,
         "lib": [
             "DOM",
@@ -17,11 +18,14 @@
         "moduleResolution": "Node",
         "resolveJsonModule": true,
         "isolatedModules": false,
-        "noEmit": true,
-        "jsx": "react-jsx"
+        "jsx": "react-jsx",
+        "project":"src",
     },
     "include": [
         "src"
+    ],
+    "exclude": [
+        "src/client"
     ],
     "references": [
         {
