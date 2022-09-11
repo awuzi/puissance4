@@ -27,7 +27,7 @@ fastify.get('/hello', (request, reply) => {
 (async () => {
   try {
     await fastify.listen(process.env.PORT || 8080, "0.0.0.0");
-    console.log('🔥 Server is running on port 8000 🔥');
+    console.log('🔥 Server is running on port 8080 🔥');
   } catch (err) {
     fastify.log.error(err);
   }
