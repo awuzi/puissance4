@@ -8,13 +8,11 @@ export const Game = () => {
 
   return (
     <>
-      {/*<div className="container mx-auto flex flex-col justify-center">*/}
-      <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
-
-        <Puissance4/>
-        <pre>{JSON.stringify(context, null, 2)}</pre>
+      <div className="container mx-auto flex flex-col justify-center">
+          <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
+            <Puissance4 />
+          </div>
       </div>
-      {/*</div>*/}
     </>
   );
 };
