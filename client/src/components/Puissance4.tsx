@@ -200,7 +200,7 @@ const Puissance4 = () => {
         </svg>
         <span className="sr-only">Info</span>
         <div>
-          {nbTour == 0 ?
+          {context.players.length == 1 ?
               <div>
                 En attente du second joueur...
                 <button onClick={copyInviteCode} className="absolute right-3 text-white bg-blue-700 hover:bg-blue-800 rounded-lg p-2 top-2">
