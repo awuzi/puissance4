@@ -1,4 +1,4 @@
-import { TOKEN_DISTANCE_X, TOKEN_DISTANCE_Y, TOKEN_OFFSET_X, TOKEN_OFFSET_Y } from "../../client/constants";
+import { TOKEN_DISTANCE_X, TOKEN_DISTANCE_Y, TOKEN_OFFSET_X, TOKEN_OFFSET_Y } from "../../constants";
 import { Position } from "../../domain/types";
 
 /**

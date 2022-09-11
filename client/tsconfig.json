@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "ESNext",
-        "outDir": "build",
+        "outDir": "dist",
         "useDefineForClassFields": true,
         "lib": [
             "DOM",
@@ -18,21 +18,9 @@
         "moduleResolution": "Node",
         "resolveJsonModule": true,
         "isolatedModules": false,
-        "jsx": "react-jsx",
-        "project":"src",
+        "jsx": "react-jsx"
     },
     "include": [
         "src"
-    ],
-    "exclude": [
-        "src/client"
-    ],
-    "references": [
-        {
-            "path": "./tsconfig.node.json"
-        }
-    ],
-    "typeRoots": [
-        "../node_modules/@types"
     ]
 }

@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import {findFreePositionY, isGameDraw, playTurn} from "../../domain/gamerules";
-import {CellState, GameAction, GameId, GridState, Player, PlayerColor, Position, WinningSequence} from "../../domain/types";
-import { calculatePosition } from "../../shared/helpers/canva";
+import {findFreePositionY, isGameDraw, playTurn} from "../domain/gamerules";
+import {CellState, GameAction, GameId, GridState, Player, PlayerColor, Position, WinningSequence} from "../domain/types";
+import { calculatePosition } from "../shared/helpers/canva";
 import {
   CANVA_GRID,
   CANVA_HEIGHT,
@@ -20,7 +20,7 @@ import {
   YELLOW_COLOR
 } from "../constants";
 import { GameContext, socket } from "../context";
-import {makeEmptyGrid} from "../../domain/grid";
+import {makeEmptyGrid} from "../domain/grid";
 
 
 const Puissance4 = () => {

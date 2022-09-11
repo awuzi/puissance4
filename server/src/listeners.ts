@@ -1,8 +1,7 @@
-import { Simulate } from "react-dom/test-utils";
 import { Server, Socket } from "socket.io";
-import { GameAction, GameId, GameState, GridState, PlayerColor, PlayerId } from "../domain/types";
+import { GameAction, GameId, GameState, Player, PlayerColor, PlayerId } from "./types";
 
-let game: { gameId: string, players: { id: string, playerColor: PlayerColor }[] } = {
+let game: { gameId: string, players: Player[] } = {
   gameId: '',
   players: []
 };

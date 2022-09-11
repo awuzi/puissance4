@@ -1,10 +1,9 @@
 import React, { ChangeEvent, useContext, useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { makeEmptyGrid } from "../../domain/grid";
-import { GameAction, GameId, GameState, GridState, Player, PlayerColor, PlayerId } from "../../domain/types";
-import { createState } from "../../shared/helpers/state";
-import { generateGameId, generatePlayerId } from "../../shared/helpers/uuid";
-import Puissance4 from "../components/Puissance4";
+import { makeEmptyGrid } from "../domain/grid";
+import { GameAction, GameId, GameState, GridState, Player, PlayerColor, PlayerId } from "../domain/types";
+import { createState } from "../shared/helpers/state";
+import { generateGameId, generatePlayerId } from "../shared/helpers/uuid";
 import { GameContext, socket } from "../context";
 
 export const Home = () => {

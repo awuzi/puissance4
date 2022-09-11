@@ -7,8 +7,8 @@ import { registerListeners } from "./listeners";
 
 
 const fastify = Fastify({ logger: false });
-fastify.register(FastifyStatic, { root: resolve("./public") });
-fastify.register(fastifyIO);
+// fastify.register(FastifyStatic, { root: resolve("./build") });
+fastify.register(fastifyIO, { cors: { origin: '*' } });
 
 fastify.ready(err => {
   if (err) throw err;
@@ -19,9 +19,14 @@ fastify.ready(err => {
   io.on('connection', onConnection);
 });
 
+fastify.get('/hello', (request, reply) => {
+  reply.status(200).send({ message: 'Hello Fastify' });
+});
+
+
 (async () => {
   try {
-    await fastify.listen(process.env.PORT || 8000, "0.0.0.0");
+    await fastify.listen(process.env.PORT || 8080, "0.0.0.0");
     console.log('🔥 Server is running on port 8000 🔥');
   } catch (err) {
     fastify.log.error(err);
