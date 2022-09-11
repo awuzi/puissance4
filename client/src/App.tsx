@@ -1,8 +1,8 @@
-import '../../public/assets/style.css'
+import './assets/style.css'
 import { Route, Routes } from "react-router-dom";
 import { io } from "socket.io-client";
-import { makeEmptyGrid } from "../domain/grid";
-import { GameAction, GameId, GameState, GridState, Player } from "../domain/types";
+import { makeEmptyGrid } from "./domain/grid";
+import { GameAction, GameId, GameState, GridState, Player } from "./domain/types";
 import { GameContext, socket } from "./context/";
 import { Home } from "./pages/Home";
 import { Game } from "./pages/Game";
