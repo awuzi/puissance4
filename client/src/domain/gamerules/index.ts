@@ -1,4 +1,4 @@
-import { DIRECTIONS, NB_OF_MATCHING_COLOR, ORIENTATION } from "../../client/constants";
+import { DIRECTIONS, NB_OF_MATCHING_COLOR, ORIENTATION } from "../../constants";
 import { GridState, PlayerColor, WinningSequence } from "../types";
 
 export function playTurn(

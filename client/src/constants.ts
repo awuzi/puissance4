@@ -2,7 +2,7 @@
 
 // Careful, may break the game
 
-import {createCanvaGrid} from "../shared/helpers/grid";
+import {createCanvaGrid} from "./shared/helpers/grid";
 
 export const GAME_SPEED = 3;
 export const RED_COLOR = '#c82124';

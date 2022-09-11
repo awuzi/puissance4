@@ -7,8 +7,8 @@ import { registerListeners } from "./listeners";
 
 
 const fastify = Fastify({ logger: false });
-fastify.register(FastifyStatic, { root: resolve("./public") });
-fastify.register(fastifyIO);
+fastify.register(FastifyStatic, { root: resolve("./build") });
+fastify.register(fastifyIO, { cors: { origin: '*' } });
 
 fastify.ready(err => {
   if (err) throw err;

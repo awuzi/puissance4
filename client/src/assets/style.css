@@ -36,5 +36,5 @@ input {
 }
 
 .gameCanva {
-  background-image: url('/assets/grille.png');
+  background-image: url('grille.png');
 }
