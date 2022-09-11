@@ -1,4 +1,4 @@
-import './assets/style.css'
+import '../assets/style.css'
 import { Route, Routes } from "react-router-dom";
 import { io } from "socket.io-client";
 import { makeEmptyGrid } from "./domain/grid";

@@ -176,7 +176,7 @@ const Puissance4 = () => {
         width={CANVA_WIDTH}
         height={CANVA_HEIGHT}
         className="bg-amber-50 gameCanva"
-        style={{ width: CANVA_WIDTH, height: CANVA_HEIGHT }}
+        style={{ width: CANVA_WIDTH, height: CANVA_HEIGHT, borderRadius: 10, boxShadow: '0 0 10px 0 rgba(0,0,0,0.5)' }}
       >
       </canvas>
       {!playing ?

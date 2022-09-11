@@ -8,11 +8,10 @@ export const Game = () => {
 
   return (
     <>
-      <div className="container mx-auto flex flex-col justify-center">
-          <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
+
+        <div style={{ height: "100vh", display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
             <Puissance4 />
-          </div>
-      </div>
+        </div>
     </>
   );
 };
