@@ -8,7 +8,6 @@ export const Game = () => {
 
   return (
     <>
-
         <div style={{ height: "100vh", display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
             <Puissance4 />
         </div>
