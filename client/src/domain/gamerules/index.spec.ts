@@ -8,8 +8,11 @@ describe('#findFreePositionY', () => {
     it('should insert player column in the column number he choosed in the last row', () => {
       // given
       const x = 0
+      const rows = 6;
+      const columns = 7
+
       // when
-      let grid = makeEmptyGrid(6)(7)
+      let grid = makeEmptyGrid(rows)(columns)
       const y = findFreePositionY(x, grid)
 
       //then
