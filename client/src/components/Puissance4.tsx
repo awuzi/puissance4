@@ -31,6 +31,8 @@ const Puissance4 = () => {
   const [winSequence, setWinSequence] = useState<WinningSequence>([]);
   const [playing, setPlaying] = useState(true);
   const [gameDraw, setGameDraw] = useState(false);
+  const [nbTour, setNbTour] = useState(-1);
+  const [copyButtonText, setCopyButtonText] = useState('Copier le code d\'invitation');
 
   useEffect(() => {
     defaultState();
@@ -41,11 +43,14 @@ const Puissance4 = () => {
       const winningFrame = setTimeout(() => {
         setPlaying(false);
         clearInterval(winningFrame);
-      }, 5000);
+      }, 4000);
     }
   }, [context]);
 
 
+  /**
+   * Réinitialisation des données de jeu puis redirection accueil
+   */
   const backHome = () => {
     setContext({
       gameId: '' as GameId,
@@ -54,6 +59,19 @@ const Puissance4 = () => {
       grid: makeEmptyGrid(6)(7)
     });
     navigate('/', { replace: true });
+  }
+
+  /**
+   * Copie le code d'invitation dans le presse papier
+   */
+  const copyInviteCode = () => {
+    const code = document.URL.split("/")[4];
+    navigator.clipboard.writeText(code).then(r =>
+      setCopyButtonText('Copié !')
+    );
+    setTimeout(() => {
+      setCopyButtonText('Copier le code d\'invitation');
+    }, 2000);
   }
 
   /**
@@ -66,6 +84,7 @@ const Puissance4 = () => {
         if (color !== "_") dropTokenCanva(color, rowIndex, colIndex, true);
       });
     });
+    setNbTour(nbTour+1);
   }
 
   /**
@@ -73,7 +92,7 @@ const Puissance4 = () => {
    * @param event
    */
   function onGridClick(event: React.MouseEvent): void {
-    if (localStorage.getItem('playerId') === context.currentPlayer.id) {
+    if (localStorage.getItem('playerId') === context.currentPlayer.id && nbTour !== 0) {
       const canvas = canvasRef.current
       let rect: DOMRect = canvas!.getBoundingClientRect();
       const x = event.clientX - rect.left;
@@ -94,6 +113,10 @@ const Puissance4 = () => {
     }
   }
 
+  /**
+   * Met à jour la grille du jeu et l'envoie au socket
+   * @param grid
+   */
   const updateGrid = (grid: GridState): void => {
     const currentState = {
       ...context,
@@ -170,17 +193,39 @@ const Puissance4 = () => {
 
   return (
     <>
+      {playing ? <>
+      <div className={`flex relative p-4 mb-4 text-sm text-black rounded-lg bgColor-${ context.currentPlayer.playerColor }`} style={{width: CANVA_WIDTH}} role="alert">
+        <svg aria-hidden="true" className="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"></path>
+        </svg>
+        <span className="sr-only">Info</span>
+        <div>
+          {nbTour == 0 ?
+              <div>
+                En attente du second joueur...
+                <button onClick={copyInviteCode} className="absolute right-3 text-white bg-blue-700 hover:bg-blue-800 rounded-lg p-2 top-2">
+                  { copyButtonText }
+                </button>
+              </div>
+              :
+              <>
+                <span className="font-bold">Tour {nbTour} :</span> {(context.currentPlayer?.playerColor == localStorage.getItem('playerColor')) ? "C'est à votre tour 😉" : "Tour de l'adversaire 🤜"}
+              </>
+          }
+        </div>
+      </div>
+      </> : '' }
       <canvas
         ref={canvasRef}
         onClick={onGridClick}
         width={CANVA_WIDTH}
         height={CANVA_HEIGHT}
         className="bg-amber-50 gameCanva"
-        style={{ width: CANVA_WIDTH, height: CANVA_HEIGHT }}
+        style={{ width: CANVA_WIDTH, height: CANVA_HEIGHT, borderRadius: 10, boxShadow: '0 0 10px 0 rgba(0,0,0,0.5)' }}
       >
       </canvas>
       {!playing ?
-        <div className="float-left bg-amber-50 bg-opacity-90 absolute text-center" style={{ height: "480px", width: "640px" }}>
+        <div className="float-left bg-amber-50 bg-opacity-90 absolute text-center" style={{ height: "480px", width: "640px", borderRadius: 10}}>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold">
             La partie est terminée {gameDraw ? "en égalité" : (context.currentPlayer.playerColor == PlayerColor.RED) ? "et le joueur Jaune a gagné" : "et le joueur Rouge a gagné"}
             <br/>

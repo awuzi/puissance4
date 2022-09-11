@@ -38,3 +38,11 @@ input {
 .gameCanva {
   background-image: url('grille.png');
 }
+
+.bgColor-R {
+  background-color: #c0392b;
+}
+
+.bgColor-Y {
+  background-color: #f1c40f;
+}
