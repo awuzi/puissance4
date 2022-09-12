@@ -57,7 +57,7 @@ describe('#findFreePositionY', () => {
   })
 })
 
-describe('#getWinningSequence', () => {
+describe('#findConnectedTokens', () => {
   describe('When less than four are aligned', () => {
     it('should return a winningSequence with less than 4 elements', () => {
       // given
@@ -83,7 +83,7 @@ describe('#getWinningSequence', () => {
   })
 
   describe('When four tokens are aligned', () => {
-    it('should return true horizontally', () => {
+    it('should return the horizontal winning line', () => {
       // given
       const grid: GridState = [
         ['_', '_', '_', '_', '_', '_', '_'],
@@ -101,7 +101,6 @@ describe('#getWinningSequence', () => {
       // when
       const winningSequence = findConnectedTokens(lastTokenCoords.x, lastTokenCoords.y, PlayerColor.RED, grid)
 
-      console.log('winningSequence : ', winningSequence);
       expect(winningSequence.length).toEqual(4);
       expect(winningSequence).toEqual(expect.arrayContaining([
         { x: 0, y: 5, color: 'R' },
@@ -110,7 +109,8 @@ describe('#getWinningSequence', () => {
         { x: 3, y: 5, color: 'R' }
       ]));
     })
-    it('should return true vertically', () => {
+
+    it('should return the vertical winning line', () => {
       // given
       const grid: GridState = [
         ['_', '_', '_', '_', '_', '_', '_'],
@@ -131,7 +131,8 @@ describe('#getWinningSequence', () => {
       // then
       expect(winningSequence.length).toBe(4);
     })
-    it('should return true diagonally', () => {
+
+    it('should return the diagonal winning line', () => {
       // given
       const grid: GridState = [
         ['_', '_', '_', '_', '_', '_', '_'],
@@ -151,21 +152,6 @@ describe('#getWinningSequence', () => {
 
       expect(winningSequence.length).toBe(4);
     });
-
-    it('should pass diagonally', () => {
-      const grid = [
-        ["_", "_", "_", "_", "_", "_", "_"],
-        ["_", "_", "_", "_", "_", "_", "_"],
-        ["_", "_", "_", "R", "_", "_", "_"],
-        ["_", "_", "_", "Y", "R", "_", "_"],
-        ["_", "_", "_", "R", "R", "R", "Y"],
-        ["_", "_", "_", "Y", "Y", "Y", "R"]
-      ] as GridState;
-
-      const winningSequence = findConnectedTokens(5, 4, PlayerColor.RED, grid);
-
-      expect(winningSequence.length).toBe(4);
-    })
   });
 });
 
