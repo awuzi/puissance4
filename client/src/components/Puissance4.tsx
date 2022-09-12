@@ -168,7 +168,7 @@ const Puissance4 = () => {
 
   return (
     <>
-      {playing ? <Turns nbTour={nbOfTurn} /> : '' }
+      {playing ? <Turns nbTour={nbOfTurn} /> : <EndingPane gameDraw={gameDraw} /> }
       <canvas
         ref={canvasRef}
         onClick={onGridClick}
@@ -178,7 +178,6 @@ const Puissance4 = () => {
         style={{ width: CANVA_WIDTH, height: CANVA_HEIGHT }}
       >
       </canvas>
-      {!playing ? <EndingPane gameDraw={gameDraw} /> : ''}
     </>
   )
 }
