@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import {findFreePositionY, isGameDraw, playTurn} from "../domain/gamerules";
-import {CellState, GameAction, GameId, GridState, Player, PlayerColor, Position, WinningSequence} from "../domain/types";
+import { findFreePositionY, isGameDraw, playTurn } from "../domain/gamerules";
+import { CellState, GameAction, GameId, GridState, Player, PlayerColor, Position, WinningSequence } from "../domain/types";
 import { calculatePosition } from "../shared/helpers/canva";
 import {
   CANVA_GRID,
@@ -20,9 +20,10 @@ import {
   YELLOW_COLOR
 } from "../constants";
 import { GameContext, socket } from "../context";
-import {makeEmptyGrid} from "../domain/grid";
-import Turns from "./Turns";
+import { makeEmptyGrid } from "../domain/grid";
+import Button from "./Button";
 import EndingPane from "./EndingPane";
+import Turns from "./Turns";
 
 
 const Puissance4 = () => {
@@ -33,8 +34,7 @@ const Puissance4 = () => {
   const [winSequence, setWinSequence] = useState<WinningSequence>([]);
   const [playing, setPlaying] = useState(true);
   const [gameDraw, setGameDraw] = useState(false);
-  const [nbTour, setNbTour] = useState(-1);
-
+  const [nbOfTurn, setNbOfTurn] = useState(-1);
 
   useEffect(() => {
     defaultState();
@@ -59,7 +59,7 @@ const Puissance4 = () => {
         if (color !== "_") dropTokenCanva(color, rowIndex, colIndex, true);
       });
     });
-    setNbTour(nbTour+1);
+    setNbOfTurn(nbOfTurn + 1);
   }
 
   /**
@@ -67,7 +67,7 @@ const Puissance4 = () => {
    * @param event
    */
   function onGridClick(event: React.MouseEvent): void {
-    if (localStorage.getItem('playerId') === context.currentPlayer.id && nbTour !== 0) {
+    if (localStorage.getItem('playerId') === context.currentPlayer.id && nbOfTurn !== 0) {
       const canvas = canvasRef.current
       let rect: DOMRect = canvas!.getBoundingClientRect();
       const x = event.clientX - rect.left;
@@ -75,13 +75,13 @@ const Puissance4 = () => {
       for (const [column, coord] of CANVA_GRID.entries()) {
         if (x < coord) {
           const freePosY = findFreePositionY(column, context.grid);
-            dropTokenCanva(storedTokenColor, freePosY, column)
-            const {grid, isWon, winningSequence} = playTurn(storedTokenColor, column, context.grid);
-            if (isWon == true) setWinSequence(winningSequence);
-            if (isGameDraw(grid)) {
-              setGameDraw(true);
-              setPlaying(false);
-            }
+          dropTokenCanva(storedTokenColor, freePosY, column)
+          const { grid, isWon, winningSequence } = playTurn(storedTokenColor, column, context.grid);
+          if (isWon == true) setWinSequence(winningSequence);
+          if (isGameDraw(grid)) {
+            setGameDraw(true);
+            setPlaying(false);
+          }
           break;
         }
       }
@@ -168,14 +168,14 @@ const Puissance4 = () => {
 
   return (
     <>
-      {playing ? <Turns nbTour={nbTour} /> : '' }
+      {playing ? <Turns nbTour={nbOfTurn} /> : '' }
       <canvas
         ref={canvasRef}
         onClick={onGridClick}
         width={CANVA_WIDTH}
         height={CANVA_HEIGHT}
         className="bg-amber-50 gameCanva"
-        style={{ width: CANVA_WIDTH, height: CANVA_HEIGHT, borderRadius: 10, boxShadow: '0 0 10px 0 rgba(0,0,0,0.5)' }}
+        style={{ width: CANVA_WIDTH, height: CANVA_HEIGHT }}
       >
       </canvas>
       {!playing ? <EndingPane gameDraw={gameDraw} /> : ''}

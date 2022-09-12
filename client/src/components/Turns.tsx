@@ -1,6 +1,7 @@
 import React, {useContext, useState} from "react";
 import {GameContext} from "../context";
 import {CANVA_WIDTH} from "../constants";
+import Button from "./Button";
 
 interface TurnsProps {
     nbTour: number;
