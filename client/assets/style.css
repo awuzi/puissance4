@@ -35,6 +35,12 @@ input {
   background-color: #fff;
 }
 
+.logo {
+    width: 200px;
+    height: 200px;
+    background-image: url('logo.png');
+}
+
 .gameCanva {
   background-image: url('grille.png');
 }
