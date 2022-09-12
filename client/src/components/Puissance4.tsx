@@ -21,6 +21,8 @@ import {
 } from "../constants";
 import { GameContext, socket } from "../context";
 import {makeEmptyGrid} from "../domain/grid";
+import Turns from "./Turns";
+import EndingPane from "./EndingPane";
 
 
 const Puissance4 = () => {
@@ -32,7 +34,7 @@ const Puissance4 = () => {
   const [playing, setPlaying] = useState(true);
   const [gameDraw, setGameDraw] = useState(false);
   const [nbTour, setNbTour] = useState(-1);
-  const [copyButtonText, setCopyButtonText] = useState('Copier le code d\'invitation');
+
 
   useEffect(() => {
     defaultState();
@@ -46,33 +48,6 @@ const Puissance4 = () => {
       }, 4000);
     }
   }, [context]);
-
-
-  /**
-   * Réinitialisation des données de jeu puis redirection accueil
-   */
-  const backHome = () => {
-    setContext({
-      gameId: '' as GameId,
-      players: [] as Player[],
-      currentPlayer: {} as Player,
-      grid: makeEmptyGrid(6)(7)
-    });
-    navigate('/', { replace: true });
-  }
-
-  /**
-   * Copie le code d'invitation dans le presse papier
-   */
-  const copyInviteCode = () => {
-    const code = document.URL.split("/")[4];
-    navigator.clipboard.writeText(code).then(r =>
-      setCopyButtonText('Copié !')
-    );
-    setTimeout(() => {
-      setCopyButtonText('Copier le code d\'invitation');
-    }, 2000);
-  }
 
   /**
    * Dessine la grille de jetons
@@ -193,28 +168,7 @@ const Puissance4 = () => {
 
   return (
     <>
-      {playing ? <>
-      <div className={`flex relative p-4 mb-4 text-sm text-black rounded-lg bgColor-${ context.currentPlayer.playerColor }`} style={{width: CANVA_WIDTH}} role="alert">
-        <svg aria-hidden="true" className="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"></path>
-        </svg>
-        <span className="sr-only">Info</span>
-        <div>
-          {context.players.length == 1 ?
-              <div>
-                En attente du second joueur...
-                <button onClick={copyInviteCode} className="absolute right-3 text-white bg-blue-700 hover:bg-blue-800 rounded-lg p-2 top-2">
-                  { copyButtonText }
-                </button>
-              </div>
-              :
-              <>
-                <span className="font-bold">Tour {nbTour} :</span> {(context.currentPlayer?.playerColor == localStorage.getItem('playerColor')) ? "C'est à votre tour 😉" : "Tour de l'adversaire 🤜"}
-              </>
-          }
-        </div>
-      </div>
-      </> : '' }
+      {playing ? <Turns nbTour={nbTour} /> : '' }
       <canvas
         ref={canvasRef}
         onClick={onGridClick}
@@ -224,17 +178,7 @@ const Puissance4 = () => {
         style={{ width: CANVA_WIDTH, height: CANVA_HEIGHT, borderRadius: 10, boxShadow: '0 0 10px 0 rgba(0,0,0,0.5)' }}
       >
       </canvas>
-      {!playing ?
-        <div className="float-left bg-amber-50 bg-opacity-90 absolute text-center" style={{ height: "480px", width: "640px", borderRadius: 10}}>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold">
-            La partie est terminée {gameDraw ? "en égalité" : (context.currentPlayer.playerColor == PlayerColor.RED) ? "et le joueur Jaune a gagné" : "et le joueur Rouge a gagné"}
-            <br/>
-            <button onClick={backHome} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-5">
-              Retour à l'accueil
-            </button>
-          </div>
-        </div>
-        : ''}
+      {!playing ? <EndingPane gameDraw={gameDraw} /> : ''}
     </>
   )
 }
