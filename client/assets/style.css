@@ -35,8 +35,16 @@ input {
   background-color: #fff;
 }
 
+.logo {
+    width: 200px;
+    height: 200px;
+    background-image: url('logo.png');
+}
+
 .gameCanva {
   background-image: url('grille.png');
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0,0,0,0.5);
 }
 
 .bgColor-R {

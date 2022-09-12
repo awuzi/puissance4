@@ -1,4 +1,4 @@
-import { NB_OF_MATCHING_COLOR } from "../../constants";
+import {DIRECTIONS, NB_OF_MATCHING_COLOR, ORIENTATION} from "../../constants";
 import { GridState, PlayerColor, WinningSequence } from "../types";
 
 export function playTurn(
@@ -40,8 +40,6 @@ export function findConnectedTokens(
   playerColor: PlayerColor,
   grid: GridState
 ): WinningSequence {
-  const DIRECTIONS = [[1, 0], [0, 1], [1, 1], [1, -1]];
-  const ORIENTATION = [1, -1];
   const position = { x, y, color: playerColor };
 
   for (let [directionX, directionY] of DIRECTIONS) {
